@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shadow Web Math Academy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Rubik:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --void:#0a0a0d;
+    --void-2:#131318;
+    --panel:#1a1a21;
+    --panel-2:#20202a;
+    --line:#2c2c38;
+    --chakra:#ff7a1a;
+    --chakra-dim:#7a3d15;
+    --suit:#e21b3c;
+    --suit-dim:#5c0f1c;
+    --gold:#ffcc3a;
+    --ink:#f0eee8;
+    --ink-dim:#a8a6ae;
+    --ok:#3ddc84;
+    --bad:#ff4d5e;
+    --card-radius:16px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(circle at 15% -10%, rgba(255,122,26,0.12), transparent 40%),
+      radial-gradient(circle at 90% 10%, rgba(226,27,60,0.10), transparent 45%),
+      var(--void);
+    color:var(--ink);
+    font-family:'Rubik',sans-serif;
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  .display{font-family:'Bangers',cursive; letter-spacing:1px;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+
+  #app{max-width:720px;margin:0 auto;padding:18px 16px 60px;}
+
+  /* ---------- Top bar ---------- */
+  .topbar{
+    display:flex; align-items:center; justify-content:space-between;
+    gap:12px; margin-bottom:18px;
+  }
+  .brand{
+    display:flex; align-items:center; gap:10px;
+  }
+  .brand-mark{
+    width:40px;height:40px;border-radius:10px;
+    background:linear-gradient(145deg, var(--chakra), var(--suit));
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Bangers',cursive;font-size:20px;color:#0a0a0d;
+    box-shadow:0 0 0 2px var(--void-2), 0 0 18px rgba(255,122,26,0.35);
+    flex-shrink:0;
+  }
+  .brand-text .t1{font-size:11px;letter-spacing:2.5px;color:var(--ink-dim);text-transform:uppercase;}
+  .brand-text .t2{font-family:'Bangers',cursive;font-size:22px;line-height:1;letter-spacing:1px;}
+
+  .xp-wrap{text-align:right; flex-shrink:0;}
+  .xp-num{font-family:'Bangers',cursive; font-size:22px; color:var(--gold); line-height:1;}
+  .xp-label{font-size:10px; color:var(--ink-dim); letter-spacing:1.5px; text-transform:uppercase;}
+
+  /* ---------- Arc banner ---------- */
+  .arc-banner{
+    border-radius:14px; padding:14px 16px; margin-bottom:16px;
+    display:flex; align-items:center; gap:12px;
+    border:1px solid var(--line);
+  }
+  .arc-banner.chakra{ background:linear-gradient(120deg, rgba(255,122,26,0.16), rgba(255,122,26,0.02)); }
+  .arc-banner.suit{ background:linear-gradient(120deg, rgba(226,27,60,0.18), rgba(226,27,60,0.02)); }
+  .arc-icon{font-size:22px;}
+  .arc-banner .arc-t{font-family:'Bangers',cursive; font-size:17px; letter-spacing:0.5px;}
+  .arc-banner .arc-s{font-size:12px; color:var(--ink-dim);}
+
+  /* ---------- Dashboard path ---------- */
+  .path{
+    display:flex; flex-direction:column; gap:10px; margin-bottom:20px;
+  }
+  .node{
+    display:flex; align-items:center; gap:14px;
+    background:var(--panel); border:1px solid var(--line);
+    border-radius:var(--card-radius); padding:12px 14px;
+    cursor:pointer; transition:transform .15s ease, border-color .15s ease;
+    position:relative;
+  }
+  .node:hover{ transform:translateX(2px); }
+  .node.locked{ cursor:not-allowed; opacity:0.45; }
+  .node.done{ border-color:rgba(61,220,132,0.4); }
+  .node.current{ border-color:var(--chakra); box-shadow:0 0 0 1px rgba(255,122,26,0.25) inset; }
+  .node .num{
+    width:38px;height:38px;border-radius:10px;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Bangers',cursive;font-size:17px;
+    background:var(--panel-2); color:var(--ink-dim);
+  }
+  .node.current .num{ background:var(--chakra); color:#1a0d02; }
+  .node.done .num{ background:var(--ok); color:#052b16; }
+  .node .info{flex:1; min-width:0;}
+  .node .info .nt{font-weight:700; font-size:14.5px;}
+  .node .info .ns{font-size:11.5px; color:var(--ink-dim); margin-top:1px;}
+  .node .badge-icon{font-size:18px; flex-shrink:0;}
+  .node .lock-icon{font-size:15px; color:var(--ink-dim); flex-shrink:0;}
+
+  /* ---------- Reward shelf ---------- */
+  .shelf-title{font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--ink-dim); margin:22px 0 10px;}
+  .shelf{display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:8px;}
+  .shelf-item{
+    background:var(--panel); border:1px solid var(--line); border-radius:12px;
+    padding:10px 6px; text-align:center; font-size:10.5px; color:var(--ink-dim);
+  }
+  .shelf-item.earned{ border-color:var(--gold); color:var(--ink); background:rgba(255,204,58,0.08); }
+  .shelf-item .si-icon{font-size:20px; display:block; margin-bottom:4px;}
+
+  .reset-row{ text-align:center; margin-top:26px; }
+  .reset-btn{
+    background:none; border:1px solid var(--line); color:var(--ink-dim);
+    padding:8px 14px; border-radius:20px; font-size:11.5px; cursor:pointer;
+  }
+
+  /* ---------- Day view ---------- */
+  .day-header{ margin-bottom:16px; }
+  .back-btn{
+    background:none;border:none;color:var(--ink-dim); font-size:13px;
+    cursor:pointer; padding:4px 0; margin-bottom:8px; display:flex; align-items:center; gap:6px;
+  }
+  .day-title{ font-family:'Bangers',cursive; font-size:28px; line-height:1.05; margin:2px 0 2px; }
+  .day-sub{ font-size:12.5px; color:var(--ink-dim); }
+  .day-mission{ font-size:13.5px; margin-top:8px; color:var(--ink); background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:10px 12px; }
+
+  .levels-row{ display:flex; gap:6px; margin:16px 0 18px; }
+  .level-pip{
+    flex:1; height:6px; border-radius:4px; background:var(--panel-2);
+  }
+  .level-pip.active{ background:var(--chakra); }
+  .level-pip.pastdone{ background:var(--ok); }
+  .suit .level-pip.active{ background:var(--suit); }
+  .suit .level-pip.pastdone{ background:var(--ok); }
+
+  .level-label{ font-size:11px; letter-spacing:1.5px; text-transform:uppercase; color:var(--ink-dim); margin-bottom:10px; }
+
+  /* Flashcard */
+  .flash-stage{ display:flex; flex-direction:column; align-items:center; gap:16px; }
+  .flashcard{
+    width:100%; max-width:420px; min-height:170px; border-radius:20px;
+    background:linear-gradient(160deg, var(--panel-2), var(--panel));
+    border:1px solid var(--line); display:flex; align-items:center; justify-content:center;
+    text-align:center; padding:24px; cursor:pointer; position:relative;
+  }
+  .flashcard .fc-tag{ position:absolute; top:12px; left:14px; font-size:10px; letter-spacing:1.5px; color:var(--ink-dim); text-transform:uppercase; }
+  .flashcard .fc-q{ font-family:'Bangers',cursive; font-size:30px; letter-spacing:0.5px; }
+  .flashcard .fc-a{ font-family:'Bangers',cursive; font-size:30px; color:var(--gold); }
+  .flashcard .fc-hint{ position:absolute; bottom:10px; font-size:10.5px; color:var(--ink-dim); }
+  .fc-controls{ display:flex; gap:10px; width:100%; max-width:420px; }
+  .fc-btn{ flex:1; padding:12px; border-radius:12px; border:none; font-weight:700; font-size:13.5px; cursor:pointer; }
+  .fc-btn.miss{ background:rgba(255,77,94,0.14); color:var(--bad); border:1px solid rgba(255,77,94,0.4);}
+  .fc-btn.got{ background:rgba(61,220,132,0.14); color:var(--ok); border:1px solid rgba(61,220,132,0.4);}
+  .fc-progress{ font-size:12px; color:var(--ink-dim); }
+
+  /* Video */
+  .video-card{
+    background:var(--panel); border:1px solid var(--line); border-radius:18px; padding:22px;
+    text-align:center;
+  }
+  .video-card .vc-icon{ font-size:34px; margin-bottom:8px; }
+  .video-card .vc-label{ font-family:'Bangers',cursive; font-size:20px; margin-bottom:6px; }
+  .video-card .vc-note{ font-size:12.5px; color:var(--ink-dim); margin-bottom:16px; }
+  .primary-btn{
+    display:inline-block; background:var(--chakra); color:#1a0d02; text-decoration:none;
+    font-weight:800; padding:12px 20px; border-radius:12px; font-size:14px; border:none; cursor:pointer;
+  }
+  .suit .primary-btn{ background:var(--suit); color:#fff; }
+  .secondary-btn{
+    display:inline-block; background:var(--panel-2); color:var(--ink); text-decoration:none;
+    font-weight:700; padding:12px 20px; border-radius:12px; font-size:14px; border:1px solid var(--line); cursor:pointer; margin-top:10px;
+  }
+
+  /* Quiz (practice + boss) */
+  .quiz-q{ font-size:17px; font-weight:700; margin-bottom:14px; line-height:1.4; }
+  .quiz-choices{ display:flex; flex-direction:column; gap:9px; margin-bottom:14px;}
+  .choice-btn{
+    text-align:left; padding:13px 14px; border-radius:12px; border:1px solid var(--line);
+    background:var(--panel); color:var(--ink); font-size:14.5px; cursor:pointer; font-family:'Rubik',sans-serif;
+  }
+  .choice-btn.correct{ border-color:var(--ok); background:rgba(61,220,132,0.14); }
+  .choice-btn.wrong{ border-color:var(--bad); background:rgba(255,77,94,0.14); }
+  .choice-btn:disabled{ cursor:default; }
+  .quiz-progress{ font-size:12px; color:var(--ink-dim); margin-bottom:10px; }
+  .feedback{ font-size:13px; margin-bottom:12px; font-weight:700; }
+  .feedback.ok{ color:var(--ok); }
+  .feedback.bad{ color:var(--bad); }
+
+  .boss-meter-wrap{ margin-bottom:16px; }
+  .boss-meter-label{ display:flex; justify-content:space-between; font-size:11px; color:var(--ink-dim); margin-bottom:5px; }
+  .boss-meter{ height:10px; border-radius:6px; background:var(--panel-2); overflow:hidden; border:1px solid var(--line); }
+  .boss-meter-fill{ height:100%; background:linear-gradient(90deg, var(--suit), var(--chakra)); transition:width .3s ease; }
+
+  /* Summary */
+  .summary-wrap{ text-align:center; padding:20px 10px; }
+  .summary-icon{ font-size:52px; margin-bottom:10px; }
+  .summary-title{ font-family:'Bangers',cursive; font-size:30px; margin-bottom:6px; }
+  .summary-sub{ font-size:13.5px; color:var(--ink-dim); margin-bottom:18px; }
+  .xp-pill{
+    display:inline-block; background:rgba(255,204,58,0.14); border:1px solid rgba(255,204,58,0.4);
+    color:var(--gold); font-weight:800; padding:8px 16px; border-radius:20px; font-size:14px; margin-bottom:20px;
+  }
+  .fail-note{ font-size:13px; color:var(--bad); margin-bottom:16px; }
+
+  ::selection{ background:var(--chakra); color:#1a0d02; }
+  a{ color:inherit; }
+
+  /* ---------- Touch targets ---------- */
+  .choice-btn{ min-height:48px; }
+  .fc-btn{ min-height:48px; }
+  .primary-btn, .secondary-btn{ min-height:46px; display:inline-flex; align-items:center; justify-content:center; }
+  .node{ min-height:56px; }
+
+  /* ---------- Mobile ---------- */
+  @media (max-width:480px){
+    #app{ padding:12px 10px 50px; }
+    .topbar{ margin-bottom:14px; }
+    .brand-mark{ width:34px;height:34px;font-size:16px;border-radius:8px; }
+    .brand-text .t1{ font-size:9px; letter-spacing:1.8px; }
+    .brand-text .t2{ font-size:18px; }
+    .xp-num{ font-size:19px; }
+    .xp-label{ font-size:9px; }
+    .arc-banner{ padding:11px 12px; }
+    .node{ padding:11px 12px; gap:10px; border-radius:13px; }
+    .node .num{ width:32px;height:32px;font-size:14px;border-radius:8px; }
+    .node .info .nt{ font-size:13.5px; }
+    .node .info .ns{ font-size:10.5px; }
+    .shelf{ grid-template-columns:repeat(2,1fr); gap:7px; }
+    .shelf-item{ font-size:11px; padding:10px 6px; }
+    .day-title{ font-size:23px; }
+    .day-mission{ font-size:12.5px; padding:9px 11px; }
+    .flashcard{ min-height:150px; padding:20px 16px; }
+    .flashcard .fc-q, .flashcard .fc-a{ font-size:24px; }
+    .fc-controls{ flex-direction:column; }
+    .video-card{ padding:18px 14px; }
+    .quiz-q{ font-size:15.5px; }
+    .choice-btn{ font-size:13.5px; padding:12px 13px; }
+    .primary-btn, .secondary-btn{ width:100%; padding:13px 16px; font-size:13.5px; }
+    .summary-title{ font-size:25px; }
+  }
+
+  @media (max-width:360px){
+    .shelf{ grid-template-columns:repeat(2,1fr); }
+    .node .info .nt{ font-size:12.5px; }
+    .flashcard .fc-q, .flashcard .fc-a{ font-size:21px; }
+  }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+(function(){
+
+/* ============================= DATA ============================= */
+
+const DAYS = [
+{
+  day:1, arc:'chakra', title:"Multiplication Mastery", subtitle:"Naruto Academy Entrance Exam",
+  mission:"Before any real training begins, every ninja must know their times tables cold. Master these and division, fractions, and algebra all get easier.",
+  video:{label:"Math Antics — Multiplication", url:"https://www.youtube.com/results?search_query=math+antics+multiplication"},
+  flashcards:[["8 × 7","56"],["6 × 9","54"],["12 × 11","132"],["4 × 8","32"],["9 × 5","45"],["7 × 7","49"]],
+  practice:[
+    {q:"6 × 9 = ?", choices:["45","54","56","64"], correct:1},
+    {q:"8 × 8 = ?", choices:["54","56","64","72"], correct:2},
+    {q:"9 × 6 = ?", choices:["45","54","56","63"], correct:1},
+    {q:"7 × 8 = ?", choices:["54","56","64","72"], correct:1},
+    {q:"12 × 5 = ?", choices:["50","55","60","65"], correct:2},
+    {q:"11 × 11 = ?", choices:["110","111","121","122"], correct:2}
+  ],
+  boss:[
+    {q:"7 × 9 = ?", choices:["56","63","72","81"], correct:1},
+    {q:"8 × 6 = ?", choices:["42","48","54","56"], correct:1},
+    {q:"9 × 9 = ?", choices:["72","81","90","99"], correct:1},
+    {q:"12 × 12 = ?", choices:["124","132","144","154"], correct:2},
+    {q:"6 × 7 = ?", choices:["36","42","48","49"], correct:1}
+  ]
+},
+{
+  day:2, arc:'chakra', title:"Division Detective", subtitle:"Spider-Man Web Training",
+  mission:"Division is just multiplication in reverse — like tracing a web back to where it was shot from. Fact families make this fast.",
+  video:{label:"Math Antics — Division", url:"https://www.youtube.com/results?search_query=math+antics+division"},
+  flashcards:[["84 ÷ 7","12"],["36 ÷ 6","6"],["72 ÷ 8","9"],["54 ÷ 9","6"],["48 ÷ 6","8"],["63 ÷ 7","9"]],
+  practice:[
+    {q:"56 ÷ 7 = ?", choices:["6","7","8","9"], correct:2},
+    {q:"81 ÷ 9 = ?", choices:["7","8","9","10"], correct:2},
+    {q:"45 ÷ 5 = ?", choices:["7","8","9","10"], correct:2},
+    {q:"64 ÷ 8 = ?", choices:["6","7","8","9"], correct:2},
+    {q:"42 ÷ 6 = ?", choices:["5","6","7","8"], correct:2},
+    {q:"96 ÷ 8 = ?", choices:["10","11","12","13"], correct:2}
+  ],
+  boss:[
+    {q:"72 ÷ 9 = ?", choices:["6","7","8","9"], correct:2},
+    {q:"108 ÷ 12 = ?", choices:["8","9","10","11"], correct:1},
+    {q:"49 ÷ 7 = ?", choices:["6","7","8","9"], correct:1},
+    {q:"88 ÷ 8 = ?", choices:["9","10","11","12"], correct:2},
+    {q:"63 ÷ 9 = ?", choices:["6","7","8","9"], correct:1}
+  ]
+},
+{
+  day:3, arc:'chakra', title:"Shadow Clone Fractions", subtitle:"Comparing Fractions",
+  mission:"A fraction just shows part of a whole. Today: figure out which piece of the pizza is actually bigger.",
+  video:{label:"Math Antics — Comparing Fractions", url:"https://www.youtube.com/results?search_query=math+antics+comparing+fractions"},
+  flashcards:[["Bigger: 1/2 or 1/3?","1/2"],["Bigger: 3/4 or 2/3?","3/4"],["Bigger: 2/5 or 1/2?","1/2"],["Bigger: 5/8 or 1/2?","5/8"],["Bigger: 1/4 or 1/3?","1/3"],["Bigger: 3/5 or 2/3?","2/3"]],
+  practice:[
+    {q:"Which is bigger: 1/2 or 2/5?", choices:["1/2","2/5","Equal","Can't tell"], correct:0},
+    {q:"Which is bigger: 3/4 or 5/6?", choices:["3/4","5/6","Equal","Can't tell"], correct:1},
+    {q:"Which is bigger: 2/3 or 3/5?", choices:["2/3","3/5","Equal","Can't tell"], correct:0},
+    {q:"Which is bigger: 1/6 or 1/8?", choices:["1/6","1/8","Equal","Can't tell"], correct:0},
+    {q:"Which is bigger: 4/5 or 7/10?", choices:["4/5","7/10","Equal","Can't tell"], correct:0},
+    {q:"Which is bigger: 2/7 or 3/7?", choices:["2/7","3/7","Equal","Can't tell"], correct:1}
+  ],
+  boss:[
+    {q:"Which is bigger: 5/9 or 4/9?", choices:["5/9","4/9","Equal","Can't tell"], correct:0},
+    {q:"Which is bigger: 3/8 or 1/2?", choices:["3/8","1/2","Equal","Can't tell"], correct:1},
+    {q:"Which is bigger: 7/12 or 1/2?", choices:["7/12","1/2","Equal","Can't tell"], correct:0},
+    {q:"Which is bigger: 2/9 or 1/3?", choices:["2/9","1/3","Equal","Can't tell"], correct:1},
+    {q:"Which is bigger: 5/6 or 9/10?", choices:["5/6","9/10","Equal","Can't tell"], correct:1}
+  ]
+},
+{
+  day:4, arc:'chakra', title:"Spider-Web Fractions", subtitle:"Equivalent Fractions",
+  mission:"Different fractions can point to the exact same amount, like different web-shooter settings that land the same shot.",
+  video:{label:"Math Antics — Fractions Are Parts", url:"https://www.youtube.com/results?search_query=math+antics+equivalent+fractions"},
+  flashcards:[["Equivalent to 1/2","2/4"],["Equivalent to 2/3","4/6"],["Equivalent to 3/4","6/8"],["Equivalent to 1/5","2/10"],["Equivalent to 2/5","4/10"],["Equivalent to 3/5","6/10"]],
+  practice:[
+    {q:"Which is equivalent to 1/2?", choices:["2/4","1/3","3/5","2/5"], correct:0},
+    {q:"Which is equivalent to 2/3?", choices:["4/6","3/4","1/2","5/6"], correct:0},
+    {q:"Which is equivalent to 3/4?", choices:["6/8","4/5","2/3","5/6"], correct:0},
+    {q:"Which is equivalent to 1/3?", choices:["2/6","1/2","3/5","2/5"], correct:0},
+    {q:"Which is equivalent to 3/5?", choices:["6/10","2/3","4/5","1/2"], correct:0},
+    {q:"Which is equivalent to 4/5?", choices:["8/10","3/4","2/3","5/6"], correct:0}
+  ],
+  boss:[
+    {q:"Which is equivalent to 2/5?", choices:["4/10","1/2","3/5","2/3"], correct:0},
+    {q:"Which is equivalent to 5/6?", choices:["10/12","4/5","3/4","2/3"], correct:0},
+    {q:"Which is equivalent to 1/4?", choices:["2/8","1/3","2/5","3/8"], correct:0},
+    {q:"Which is equivalent to 3/8?", choices:["6/16","1/2","2/5","4/9"], correct:0},
+    {q:"Which is equivalent to 5/8?", choices:["10/16","3/4","1/2","4/5"], correct:0}
+  ]
+},
+{
+  day:5, arc:'chakra', title:"Combo Fractions", subtitle:"Adding Fractions (Same Bottom Number)",
+  mission:"When the bottom numbers match, adding fractions is simple — just add the top numbers, like stacking combo hits.",
+  video:{label:"Math Antics — Adding Fractions", url:"https://www.youtube.com/results?search_query=math+antics+adding+fractions"},
+  flashcards:[["1/5 + 2/5","3/5"],["2/7 + 3/7","5/7"],["1/4 + 1/4","2/4"],["3/8 + 2/8","5/8"],["1/6 + 4/6","5/6"],["2/9 + 5/9","7/9"]],
+  practice:[
+    {q:"1/6 + 2/6 = ?", choices:["3/6","3/12","1/3","2/6"], correct:0},
+    {q:"2/5 + 1/5 = ?", choices:["3/5","3/10","1/5","4/5"], correct:0},
+    {q:"3/7 + 2/7 = ?", choices:["5/7","5/14","1/7","6/7"], correct:0},
+    {q:"1/8 + 4/8 = ?", choices:["5/8","5/16","3/8","6/8"], correct:0},
+    {q:"2/9 + 4/9 = ?", choices:["6/9","6/18","2/9","7/9"], correct:0},
+    {q:"1/3 + 1/3 = ?", choices:["2/3","2/6","1/3","3/3"], correct:0}
+  ],
+  boss:[
+    {q:"3/10 + 4/10 = ?", choices:["7/10","7/20","1/10","8/10"], correct:0},
+    {q:"2/6 + 3/6 = ?", choices:["5/6","5/12","1/6","6/6"], correct:0},
+    {q:"1/4 + 2/4 = ?", choices:["3/4","3/8","1/4","4/4"], correct:0},
+    {q:"4/7 + 2/7 = ?", choices:["6/7","6/14","2/7","7/7"], correct:0},
+    {q:"3/5 + 1/5 = ?", choices:["4/5","4/10","2/5","5/5"], correct:0}
+  ]
+},
+{
+  day:6, arc:'chakra', title:"Decimal Village", subtitle:"Money & Measurements",
+  mission:"Decimals show up everywhere — prices, scores, distances. Line up the decimal points and treat it like normal addition and subtraction.",
+  video:{label:"Math Antics — Decimals", url:"https://www.youtube.com/results?search_query=math+antics+decimals"},
+  flashcards:[["0.5 + 0.25","0.75"],["1.2 + 0.3","1.5"],["$2.50 + $1.25","$3.75"],["0.75 − 0.5","0.25"],["2.0 − 0.4","1.6"],["1.1 + 1.1","2.2"]],
+  practice:[
+    {q:"0.4 + 0.3 = ?", choices:["0.7","0.43","7","0.07"], correct:0},
+    {q:"1.5 + 2.25 = ?", choices:["3.75","3.5","3.25","4"], correct:0},
+    {q:"$5.00 − $1.75 = ?", choices:["$3.25","$3.75","$4.25","$3.15"], correct:0},
+    {q:"0.6 + 0.15 = ?", choices:["0.75","0.21","0.65","0.85"], correct:0},
+    {q:"3.2 − 1.1 = ?", choices:["2.1","2.3","1.9","4.3"], correct:0},
+    {q:"0.25 + 0.25 + 0.25 = ?", choices:["0.75","1.0","0.5","0.85"], correct:0}
+  ],
+  boss:[
+    {q:"$10.00 − $3.45 = ?", choices:["$6.55","$7.55","$6.45","$7.45"], correct:0},
+    {q:"4.5 + 2.75 = ?", choices:["7.25","6.25","7.75","6.75"], correct:0},
+    {q:"0.9 − 0.35 = ?", choices:["0.55","0.65","0.45","0.75"], correct:0},
+    {q:"2.4 + 3.6 = ?", choices:["6.0","5.0","6.6","5.6"], correct:0},
+    {q:"$8.20 + $1.90 = ?", choices:["$10.10","$9.10","$10.00","$9.90"], correct:0}
+  ]
+},
+{
+  day:7, arc:'chakra', title:"Weekly Boss Battle", subtitle:"Unlock: Black Suit",
+  mission:"Everything from this week, mixed together. Beat this and the Black Suit awakens — the arc shifts from chakra training to symbiote power.",
+  video:{label:"MashUp Math — Week 1 Review", url:"https://www.youtube.com/results?search_query=mashup+math+7th+grade+review"},
+  flashcards:[["7 × 8","56"],["63 ÷ 9","7"],["Equivalent to 1/2","2/4"],["2/5 + 2/5","4/5"],["0.75 + 0.25","1.0"],["96 ÷ 8","12"]],
+  practice:[
+    {q:"9 × 7 = ?", choices:["56","63","72","81"], correct:1},
+    {q:"72 ÷ 6 = ?", choices:["11","12","13","14"], correct:1},
+    {q:"Equivalent to 3/5?", choices:["6/10","1/2","2/3","3/4"], correct:0},
+    {q:"3/8 + 4/8 = ?", choices:["7/8","7/16","1/8","8/8"], correct:0},
+    {q:"1.5 + 1.5 = ?", choices:["3.0","2.5","3.5","2.0"], correct:0},
+    {q:"$4.00 − $1.50 = ?", choices:["$2.50","$3.50","$2.00","$2.75"], correct:0}
+  ],
+  boss:[
+    {q:"8 × 9 = ?", choices:["63","72","81","64"], correct:1},
+    {q:"96 ÷ 12 = ?", choices:["7","8","9","10"], correct:1},
+    {q:"Which is bigger: 5/6 or 3/4?", choices:["5/6","3/4","Equal","Can't tell"], correct:0},
+    {q:"Equivalent to 4/5?", choices:["8/10","3/4","2/3","1/2"], correct:0},
+    {q:"2/7 + 4/7 = ?", choices:["6/7","6/14","2/7","7/7"], correct:0},
+    {q:"0.6 + 0.9 = ?", choices:["1.5","1.4","1.6","0.15"], correct:0},
+    {q:"$12.00 − $4.35 = ?", choices:["$7.65","$8.65","$7.35","$8.35"], correct:0},
+    {q:"11 × 11 = ?", choices:["110","121","122","132"], correct:1}
+  ],
+  specialBadge:{icon:"🕷️", name:"Black Suit Unlocked"}
+},
+{
+  day:8, arc:'suit', title:"Symbiote Depths", subtitle:"Negative Numbers",
+  mission:"The suit takes you below zero. Negative numbers work like a number line — think 'up and down' instead of 'more and less.'",
+  video:{label:"Math Antics — Negative Numbers", url:"https://www.youtube.com/results?search_query=math+antics+negative+numbers"},
+  flashcards:[["−3 + 5","2"],["−2 − 4","−6"],["5 − 8","−3"],["−6 + 2","−4"],["−1 − 1","−2"],["4 − 9","−5"]],
+  practice:[
+    {q:"−4 + 7 = ?", choices:["3","−3","11","−11"], correct:0},
+    {q:"−5 − 3 = ?", choices:["−8","8","−2","2"], correct:0},
+    {q:"6 − 10 = ?", choices:["−4","4","16","−16"], correct:0},
+    {q:"−2 + (−3) = ?", choices:["−5","5","−1","1"], correct:0},
+    {q:"3 − 7 = ?", choices:["−4","4","10","−10"], correct:0},
+    {q:"−8 + 5 = ?", choices:["−3","3","−13","13"], correct:0}
+  ],
+  boss:[
+    {q:"−6 + 9 = ?", choices:["3","−3","15","−15"], correct:0},
+    {q:"−4 − 4 = ?", choices:["−8","8","0","−16"], correct:0},
+    {q:"2 − 9 = ?", choices:["−7","7","11","−11"], correct:0},
+    {q:"−10 + 3 = ?", choices:["−7","7","−13","13"], correct:0},
+    {q:"−5 + (−2) = ?", choices:["−7","7","−3","3"], correct:0}
+  ]
+},
+{
+  day:9, arc:'suit', title:"What Is X?", subtitle:"Meeting Variables",
+  mission:"A variable is a hidden value in disguise — like a hero's secret identity. Your job is to unmask it.",
+  video:{label:"Khan Academy — Variables", url:"https://www.youtube.com/results?search_query=khan+academy+variables+intro+algebra"},
+  flashcards:[["x + 7 = 12, x = ?","5"],["x − 4 = 9, x = ?","13"],["2x = 10, x = ?","5"],["x + 3 = 8, x = ?","5"],["x − 6 = 2, x = ?","8"],["3x = 9, x = ?","3"]],
+  practice:[
+    {q:"x + 5 = 12, x = ?", choices:["5","6","7","8"], correct:2},
+    {q:"x − 3 = 10, x = ?", choices:["7","13","10","3"], correct:1},
+    {q:"4x = 20, x = ?", choices:["4","5","16","80"], correct:1},
+    {q:"x + 9 = 15, x = ?", choices:["6","24","5","7"], correct:0},
+    {q:"x − 7 = 3, x = ?", choices:["10","4","−4","21"], correct:0},
+    {q:"2x = 16, x = ?", choices:["6","7","8","32"], correct:2}
+  ],
+  boss:[
+    {q:"x + 8 = 14, x = ?", choices:["6","22","7","5"], correct:0},
+    {q:"x − 5 = 11, x = ?", choices:["16","6","−6","55"], correct:0},
+    {q:"5x = 25, x = ?", choices:["4","5","6","125"], correct:1},
+    {q:"x + 2 = 9, x = ?", choices:["7","11","6","4"], correct:0},
+    {q:"3x = 21, x = ?", choices:["6","7","8","63"], correct:1}
+  ]
+},
+{
+  day:10, arc:'suit', title:"Chunin Exam", subtitle:"One-Step Equations",
+  mission:"Whatever you do to one side, you must do to the other. Undo the operation to set x free.",
+  video:{label:"Khan Academy — One-Step Equations", url:"https://www.youtube.com/results?search_query=khan+academy+one+step+equations"},
+  flashcards:[["x + 5 = 12, x = ?","7"],["3x = 15, x = ?","5"],["x − 4 = 10, x = ?","14"],["x/2 = 6, x = ?","12"],["x + 9 = 13, x = ?","4"],["2x = 18, x = ?","9"]],
+  practice:[
+    {q:"x + 6 = 14, x = ?", choices:["8","20","7","9"], correct:0},
+    {q:"4x = 24, x = ?", choices:["5","6","7","96"], correct:1},
+    {q:"x − 9 = 5, x = ?", choices:["14","4","−4","45"], correct:0},
+    {q:"x/3 = 7, x = ?", choices:["21","4","10","24"], correct:0},
+    {q:"x + 11 = 15, x = ?", choices:["4","26","5","6"], correct:0},
+    {q:"5x = 30, x = ?", choices:["5","6","7","150"], correct:1}
+  ],
+  boss:[
+    {q:"x − 6 = 8, x = ?", choices:["14","2","−2","48"], correct:0},
+    {q:"3x = 27, x = ?", choices:["8","9","10","81"], correct:1},
+    {q:"x/4 = 5, x = ?", choices:["20","9","1","45"], correct:0},
+    {q:"x + 14 = 20, x = ?", choices:["6","34","7","5"], correct:0},
+    {q:"6x = 48, x = ?", choices:["7","8","9","54"], correct:1}
+  ]
+},
+{
+  day:11, arc:'suit', title:"Web Lab Order Ops", subtitle:"PEMDAS",
+  mission:"Order of operations is the recipe every equation must follow: Parentheses, Exponents, Multiply/Divide, Add/Subtract — left to right.",
+  video:{label:"Math Antics — Order of Operations", url:"https://www.youtube.com/results?search_query=math+antics+order+of+operations"},
+  flashcards:[["3 + 4 × 2","11"],["(5 + 3) × 2","16"],["10 − 2 × 3","4"],["(2+3) × (4−1)","15"],["6 + 8 ÷ 2","10"],["2 × (3+5) − 4","12"]],
+  practice:[
+    {q:"4 + 3 × 2 = ?", choices:["14","10","11","9"], correct:1},
+    {q:"(6 + 2) × 3 = ?", choices:["24","20","18","26"], correct:0},
+    {q:"12 − 4 ÷ 2 = ?", choices:["10","4","8","6"], correct:0},
+    {q:"2 × (5 + 1) = ?", choices:["12","11","10","13"], correct:0},
+    {q:"15 − (2 × 3) = ?", choices:["9","45","12","6"], correct:0},
+    {q:"(4 + 4) ÷ 2 = ?", choices:["4","8","6","2"], correct:0}
+  ],
+  boss:[
+    {q:"5 + 2 × 3 = ?", choices:["11","21","10","7"], correct:0},
+    {q:"(7 − 3) × 4 = ?", choices:["16","28","4","12"], correct:0},
+    {q:"20 ÷ 4 + 3 = ?", choices:["8","5","7","6"], correct:0},
+    {q:"3 × (2 + 5) − 1 = ?", choices:["20","21","14","15"], correct:0},
+    {q:"(9 − 4) × 2 + 1 = ?", choices:["11","13","10","9"], correct:0}
+  ]
+},
+{
+  day:12, arc:'suit', title:"Field Mission", subtitle:"Real-Life Word Problems",
+  mission:"Every skill so far shows up in real life — splitting money, buying gear, tracking scores. Translate the story into math.",
+  video:{label:"MashUp Math — Word Problems", url:"https://www.youtube.com/results?search_query=mashup+math+word+problems+grade+7"},
+  flashcards:[["Pizza: 8 slices, eat 3. Left?","5/8"],["Jersey $45, $10 off. Price?","$35"],["3 friends split $12 evenly. Each?","$4"],["4 packs at $3 each. Total?","$12"],["7 points/game × 5 games","35"],["$20 − $6.50","$13.50"]],
+  practice:[
+    {q:"A pizza has 8 slices. You eat 3. What fraction is left?", choices:["5/8","3/8","5/3","3/5"], correct:0},
+    {q:"Movie tickets are $12 each. Cost of 4 tickets?", choices:["$48","$44","$36","$52"], correct:0},
+    {q:"You have $25 and spend $9.75. How much is left?", choices:["$15.25","$16.25","$14.75","$15.75"], correct:0},
+    {q:"A recipe needs 3/4 cup sugar and you double it. How much sugar?", choices:["1 1/2 cups","3/8 cup","1 cup","2 1/4 cups"], correct:0},
+    {q:"A player scores x points a game, 42 total in 6 games. x = ?", choices:["6","7","8","9"], correct:1},
+    {q:"Socks come in packs of 6. You need 30 socks. How many packs?", choices:["4","5","6","7"], correct:1}
+  ],
+  boss:[
+    {q:"3 comic books at $4.50 each. Total?", choices:["$13.50","$12.50","$14.50","$13.00"], correct:0},
+    {q:"24 players split evenly into x teams of 6. x = ?", choices:["3","4","5","6"], correct:1},
+    {q:"A figure costs $18, tax adds $1.44. Total?", choices:["$19.44","$18.44","$19.00","$20.44"], correct:0},
+    {q:"Half of a 16-piece figure set is missing. How many pieces missing?", choices:["8","4","6","10"], correct:0},
+    {q:"You save $5 a week. Weeks to save $45?", choices:["8","9","10","7"], correct:1}
+  ]
+},
+{
+  day:13, arc:'suit', title:"Full Squad Review", subtitle:"Mixed Skills",
+  mission:"Everything at once, no hints on which skill is coming next — just like a real test.",
+  video:{label:"IXL — Grade 7 Practice", url:"https://www.youtube.com/results?search_query=ixl+grade+7+math+practice"},
+  flashcards:[["9 × 8","72"],["81 ÷ 9","9"],["Equivalent to 2/5","4/10"],["1/3 + 1/3","2/3"],["−7 + 10","3"],["x + 6 = 11, x = ?","5"]],
+  practice:[
+    {q:"7 × 6 = ?", choices:["36","42","48","49"], correct:1},
+    {q:"90 ÷ 9 = ?", choices:["9","10","11","8"], correct:1},
+    {q:"Equivalent to 3/4?", choices:["6/8","2/3","4/5","1/2"], correct:0},
+    {q:"2/6 + 3/6 = ?", choices:["5/6","5/12","1/6","6/6"], correct:0},
+    {q:"−8 + 12 = ?", choices:["4","−4","20","−20"], correct:0},
+    {q:"2x = 14, x = ?", choices:["6","7","8","28"], correct:1}
+  ],
+  boss:[
+    {q:"12 × 6 = ?", choices:["68","70","72","74"], correct:2},
+    {q:"84 ÷ 12 = ?", choices:["6","7","8","9"], correct:1},
+    {q:"Which is bigger: 7/8 or 5/6?", choices:["7/8","5/6","Equal","Can't tell"], correct:0},
+    {q:"Equivalent to 5/8?", choices:["10/16","1/2","3/4","2/3"], correct:0},
+    {q:"3/9 + 4/9 = ?", choices:["7/9","7/18","1/9","9/9"], correct:0},
+    {q:"−9 + 4 = ?", choices:["−5","5","−13","13"], correct:0},
+    {q:"x − 8 = 6, x = ?", choices:["14","2","−2","48"], correct:0},
+    {q:"4 + 2 × 5 = ?", choices:["14","30","12","10"], correct:0}
+  ]
+},
+{
+  day:14, arc:'suit', title:"Final Boss Battle", subtitle:"Prove You're Ready",
+  mission:"This is it. Every skill from the last 13 days, all in one fight. Win this and you walk into 7th grade as a Web-Slinger of Math.",
+  video:{label:"Khan Academy — 7th Grade Math Path", url:"https://www.youtube.com/results?search_query=khan+academy+7th+grade+math"},
+  flashcards:[["11 × 9","99"],["132 ÷ 12","11"],["Equivalent to 3/8","6/16"],["2/5 + 1/5","3/5"],["−6 + (−3)","−9"],["3x = 24, x = ?","8"]],
+  practice:[
+    {q:"9 × 9 = ?", choices:["81","72","90","99"], correct:0},
+    {q:"108 ÷ 9 = ?", choices:["11","12","13","10"], correct:1},
+    {q:"1/4 + 2/4 = ?", choices:["3/4","3/8","1/4","4/4"], correct:0},
+    {q:"−5 − 6 = ?", choices:["−11","11","−1","1"], correct:0},
+    {q:"x + 9 = 17, x = ?", choices:["8","26","7","9"], correct:0},
+    {q:"(3 + 5) × 2 = ?", choices:["16","13","10","8"], correct:0}
+  ],
+  boss:[
+    {q:"12 × 9 = ?", choices:["106","108","110","118"], correct:1},
+    {q:"132 ÷ 11 = ?", choices:["11","12","13","10"], correct:1},
+    {q:"Which is bigger: 4/5 or 7/9?", choices:["4/5","7/9","Equal","Can't tell"], correct:0},
+    {q:"Equivalent to 2/3?", choices:["4/6","3/5","1/2","5/6"], correct:0},
+    {q:"3/7 + 2/7 = ?", choices:["5/7","5/14","1/7","6/7"], correct:0},
+    {q:"−7 + 2 = ?", choices:["−5","5","−9","9"], correct:0},
+    {q:"4x = 32, x = ?", choices:["7","8","9","128"], correct:1},
+    {q:"x − 9 = 5, x = ?", choices:["14","4","−4","45"], correct:0},
+    {q:"(4 + 2) × 3 − 5 = ?", choices:["13","23","7","18"], correct:0},
+    {q:"A shirt costs $22, discounted by $7. New price?", choices:["$15","$29","$14","$16"], correct:0}
+  ],
+  specialBadge:{icon:"🏆", name:"Web-Slinger of Math"}
+}
+];
+
+const REWARDS = [
+  {xp:100, icon:"🍥", label:"Naruto Sticker"},
+  {xp:300, icon:"🕸️", label:"Figure Pose Challenge"},
+  {xp:500, icon:"🍦", label:"Ice Cream"},
+  {xp:1000, icon:"🧩", label:"New Figure Accessory"}
+];
+
+function bossThreshold(day){
+  if(day.day===7) return 6;
+  if(day.day===14) return 8;
+  return Math.ceil(day.boss.length*0.6);
+}
+
+/* ============================= STATE ============================= */
+
+const STORAGE_KEY = "shadow-web-academy-progress";
+let progress = { xp:0, unlockedDay:1, completedDays:{}, badges:[] };
+let ready = false;
+
+let view = { screen:'dashboard', day:null, sub:'flashcards' };
+let fc = { idx:0, deckOrder:[], correct:0 };
+let quiz = { idx:0, correct:0, selected:null, showResult:false, list:[] };
+let videoWatched = false;
+let lastBossPassed = null;
+let lastXpGain = 0;
+
+async function loadProgress(){
+  try{
+    const res = await window.storage.get(STORAGE_KEY, false);
+    if(res && res.value) progress = JSON.parse(res.value);
+  }catch(e){ /* no saved progress yet */ }
+  ready = true;
+  render();
+}
+async function saveProgress(){
+  try{ await window.storage.set(STORAGE_KEY, JSON.stringify(progress), false); }catch(e){}
+}
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+}
+
+/* ============================= NAV HELPERS ============================= */
+
+function goDashboard(){ view = {screen:'dashboard', day:null, sub:'flashcards'}; render(); }
+
+function openDay(dayNum){
+  if(dayNum > progress.unlockedDay) return;
+  view = { screen:'day', day:dayNum, sub:'flashcards' };
+  const d = DAYS[dayNum-1];
+  fc = { idx:0, deckOrder:shuffle(d.flashcards.map((_,i)=>i)), correct:0 };
+  videoWatched = false;
+  render();
+}
+
+function goSub(sub){
+  const d = DAYS[view.day-1];
+  view.sub = sub;
+  if(sub==='practice'){
+    quiz = { idx:0, correct:0, selected:null, showResult:false, list:d.practice };
+  } else if(sub==='boss'){
+    quiz = { idx:0, correct:0, selected:null, showResult:false, list:d.boss };
+  }
+  render();
+}
+
+/* ============================= ACTIONS ============================= */
+
+function flipCard(){ fc.flipped = !fc.flipped; render(); }
+
+function markCard(gotIt){
+  if(gotIt) fc.correct++;
+  fc.flipped = false;
+  fc.idx++;
+  if(fc.idx >= fc.deckOrder.length){
+    const gained = fc.correct*10;
+    progress.xp += gained;
+    lastXpGain = gained;
+    saveProgress();
+    goSub('video');
+    return;
+  }
+  render();
+}
+
+function markVideoWatched(){
+  videoWatched = true;
+  render();
+}
+
+function selectAnswer(choiceIdx){
+  if(quiz.showResult) return;
+  const q = quiz.list[quiz.idx];
+  quiz.selected = choiceIdx;
+  quiz.showResult = true;
+  if(choiceIdx === q.correct) quiz.correct++;
+  render();
+}
+
+function nextQuestion(){
+  quiz.idx++;
+  quiz.selected = null;
+  quiz.showResult = false;
+  if(quiz.idx >= quiz.list.length){
+    if(view.sub === 'practice'){
+      const gained = 30;
+      progress.xp += gained;
+      lastXpGain = gained;
+      saveProgress();
+      goSub('boss');
+    } else if(view.sub === 'boss'){
+      finishBoss();
+    }
+    return;
+  }
+  render();
+}
+
+function finishBoss(){
+  const d = DAYS[view.day-1];
+  const need = bossThreshold(d);
+  const passed = quiz.correct >= need;
+  lastBossPassed = passed;
+  if(passed){
+    const perfect = quiz.correct === quiz.list.length;
+    const gained = perfect ? 100 : 50;
+    progress.xp += gained;
+    lastXpGain = gained;
+    if(!progress.completedDays[d.day]){
+      progress.completedDays[d.day] = true;
+      progress.xp += 50; // day completion bonus
+      lastXpGain += 50;
+    }
+    if(d.specialBadge && !progress.badges.includes(d.specialBadge.name)){
+      progress.badges.push(d.specialBadge.name);
+    }
+    if(progress.unlockedDay === d.day && d.day < DAYS.length){
+      progress.unlockedDay = d.day + 1;
+    }
+    saveProgress();
+  }
+  view.sub = 'summary';
+  render();
+}
+
+function retryBoss(){
+  const d = DAYS[view.day-1];
+  quiz = { idx:0, correct:0, selected:null, showResult:false, list:d.boss };
+  view.sub = 'boss';
+  render();
+}
+
+async function resetProgress(){
+  progress = { xp:0, unlockedDay:1, completedDays:{}, badges:[] };
+  await saveProgress();
+  goDashboard();
+}
+
+/* ============================= RENDER ============================= */
+
+function esc(s){ return String(s); }
+
+function render(){
+  const app = document.getElementById('app');
+  if(!ready){ app.innerHTML = '<div style="text-align:center;padding:80px 0;color:#a8a6ae;">Loading your academy…</div>'; return; }
+
+  let html = '';
+  html += renderTopbar();
+
+  if(view.screen === 'dashboard'){
+    html += renderDashboard();
+  } else {
+    html += renderDayScreen();
+  }
+
+  app.innerHTML = html;
+  bindEvents();
+}
+
+function renderTopbar(){
+  return `
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-mark">武</div>
+      <div class="brand-text">
+        <div class="t1">14-Day Power-Up</div>
+        <div class="t2 display">Shadow Web Academy</div>
+      </div>
+    </div>
+    <div class="xp-wrap">
+      <div class="xp-num mono">${progress.xp}</div>
+      <div class="xp-label">Total XP</div>
+    </div>
+  </div>`;
+}
+
+function renderDashboard(){
+  let html = '<div class="path">';
+  DAYS.forEach(d=>{
+    const done = !!progress.completedDays[d.day];
+    const locked = d.day > progress.unlockedDay;
+    const current = d.day === progress.unlockedDay && !done;
+    let cls = 'node';
+    if(locked) cls += ' locked'; else if(done) cls += ' done'; else if(current) cls += ' current';
+    html += `<div class="${cls}" data-day="${d.day}">
+      <div class="num">${done ? '✓' : d.day}</div>
+      <div class="info">
+        <div class="nt">${esc(d.title)}</div>
+        <div class="ns">${esc(d.subtitle)}</div>
+      </div>
+      ${d.specialBadge ? `<div class="badge-icon">${d.specialBadge.icon}</div>` : ''}
+      ${locked ? '<div class="lock-icon">🔒</div>' : ''}
+    </div>`;
+  });
+  html += '</div>';
+
+  html += '<div class="shelf-title">Real-World Reward Shelf</div><div class="shelf">';
+  REWARDS.forEach(r=>{
+    const earned = progress.xp >= r.xp;
+    html += `<div class="shelf-item ${earned?'earned':''}">
+      <span class="si-icon">${r.icon}</span>
+      ${r.label}<br><span class="mono">${r.xp} XP</span>
+    </div>`;
+  });
+  html += '</div>';
+
+  if(progress.badges.length){
+    html += '<div class="shelf-title">Badges Earned</div><div class="shelf">';
+    progress.badges.forEach(b=>{
+      html += `<div class="shelf-item earned"><span class="si-icon">🎖️</span>${esc(b)}</div>`;
+    });
+    html += '</div>';
+  }
+
+  html += `<div class="reset-row"><button class="reset-btn" id="resetBtn">Reset all progress</button></div>`;
+  return html;
+}
+
+function renderDayScreen(){
+  const d = DAYS[view.day-1];
+  const arcClass = d.arc === 'suit' ? 'suit' : 'chakra';
+  let html = `<div class="${arcClass}">`;
+  html += `<button class="back-btn" id="backBtn">← Back to path</button>`;
+  html += `<div class="day-header">
+    <div class="day-title">Day ${d.day}: ${esc(d.title)}</div>
+    <div class="day-sub">${esc(d.subtitle)}</div>
+  </div>`;
+
+  if(view.sub !== 'summary'){
+    html += `<div class="day-mission">${esc(d.mission)}</div>`;
+    const stages = ['flashcards','video','practice','boss'];
+    const curIdx = stages.indexOf(view.sub);
+    html += '<div class="levels-row">';
+    stages.forEach((s,i)=>{
+      let pc = 'level-pip';
+      if(i < curIdx) pc += ' pastdone'; else if(i===curIdx) pc += ' active';
+      html += `<div class="${pc}"></div>`;
+    });
+    html += '</div>';
+  }
+
+  if(view.sub === 'flashcards') html += renderFlashcards(d);
+  else if(view.sub === 'video') html += renderVideo(d);
+  else if(view.sub === 'practice') html += renderQuiz(d, 'Practice Mission');
+  else if(view.sub === 'boss') html += renderQuiz(d, 'Boss Battle', true);
+  else if(view.sub === 'summary') html += renderSummary(d);
+
+  html += '</div>';
+  return html;
+}
+
+function renderFlashcards(d){
+  const total = fc.deckOrder.length;
+  if(fc.idx >= total) return '<div style="text-align:center;color:#a8a6ae;">Loading next level…</div>';
+  const cardData = d.flashcards[fc.deckOrder[fc.idx]];
+  const q = cardData[0], a = cardData[1];
+  return `
+  <div class="level-label">Level 1 — Warm-Up Flashcards</div>
+  <div class="flash-stage">
+    <div class="fc-progress mono">${fc.idx+1} / ${total}</div>
+    <div class="flashcard" id="flashcard">
+      <div class="fc-tag">${fc.flipped ? 'Answer' : 'Predict, then flip'}</div>
+      ${fc.flipped ? `<div class="fc-a">${esc(a)}</div>` : `<div class="fc-q">${esc(q)}</div>`}
+      <div class="fc-hint">${fc.flipped ? 'How did you do?' : 'Tap the card to reveal'}</div>
+    </div>
+    ${fc.flipped ? `
+      <div class="fc-controls">
+        <button class="fc-btn miss" id="fcMiss">Missed it</button>
+        <button class="fc-btn got" id="fcGot">Got it! (+10 XP)</button>
+      </div>
+    ` : ''}
+  </div>`;
+}
+
+function renderVideo(d){
+  return `
+  <div class="level-label">Level 2 — Watch One Short Video</div>
+  <div class="video-card">
+    <div class="vc-icon">🎬</div>
+    <div class="vc-label">${esc(d.video.label)}</div>
+    <div class="vc-note">Opens a search so you can pick the clearest video for this topic.</div>
+    <a class="primary-btn" href="${d.video.url}" target="_blank" rel="noopener">Watch the video</a><br>
+    ${videoWatched ? `<button class="primary-btn" id="toPractice" style="margin-top:14px;">Continue to Practice →</button>` : `<button class="secondary-btn" id="markWatched">I watched it</button>`}
+  </div>`;
+}
+
+function renderQuiz(d, label, isBoss){
+  const total = quiz.list.length;
+  if(quiz.idx >= total) return '<div style="text-align:center;color:#a8a6ae;">Loading…</div>';
+  const q = quiz.list[quiz.idx];
+  let html = `<div class="level-label">${isBoss ? 'Level 4' : 'Level 3'} — ${esc(label)}</div>`;
+
+  if(isBoss){
+    const need = bossThreshold(d);
+    const pct = Math.round((quiz.idx/total)*100);
+    html += `<div class="boss-meter-wrap">
+      <div class="boss-meter-label"><span>Question ${quiz.idx+1} of ${total}</span><span>Need ${need} correct to win</span></div>
+      <div class="boss-meter"><div class="boss-meter-fill" style="width:${pct}%;"></div></div>
+    </div>`;
+  } else {
+    html += `<div class="quiz-progress">Question ${quiz.idx+1} of ${total}</div>`;
+  }
+
+  html += `<div class="quiz-q">${esc(q.q)}</div><div class="quiz-choices">`;
+  q.choices.forEach((c,i)=>{
+    let cls = 'choice-btn';
+    if(quiz.showResult){
+      if(i === q.correct) cls += ' correct';
+      else if(i === quiz.selected) cls += ' wrong';
+    }
+    html += `<button class="${cls}" data-choice="${i}" ${quiz.showResult?'disabled':''}>${esc(c)}</button>`;
+  });
+  html += '</div>';
+
+  if(quiz.showResult){
+    const wasRight = quiz.selected === q.correct;
+    html += `<div class="feedback ${wasRight?'ok':'bad'}">${wasRight ? '✅ Correct!' : '❌ Not quite — correct answer is highlighted.'}</div>`;
+    html += `<button class="primary-btn" id="nextQ">${quiz.idx+1 >= total ? (isBoss ? 'Finish Battle' : 'Continue') : 'Next Question →'}</button>`;
+  }
+  return html;
+}
+
+function renderSummary(d){
+  const need = bossThreshold(d);
+  if(lastBossPassed){
+    const isFinal = d.day === DAYS.length;
+    return `
+    <div class="summary-wrap">
+      <div class="summary-icon">${isFinal ? '🏆' : '⚡'}</div>
+      <div class="summary-title">${isFinal ? 'Academy Complete!' : 'Day Complete!'}</div>
+      <div class="summary-sub">You scored ${quiz.correct}/${quiz.list.length} on the boss battle (needed ${need}).</div>
+      <div class="xp-pill">+${lastXpGain} XP earned</div>
+      ${d.specialBadge ? `<div style="margin-bottom:18px;font-size:14px;">${d.specialBadge.icon} Badge unlocked: <b>${esc(d.specialBadge.name)}</b></div>` : ''}
+      ${isFinal ? `<div style="font-size:13.5px;color:var(--ink-dim);margin-bottom:18px;">He's ready for 7th grade multiplication, division, fractions, decimals, negatives, and one-step algebra. Print this as a certificate moment!</div>` : ''}
+      <br><button class="primary-btn" id="toDashboard">Back to the Path</button>
+    </div>`;
+  } else {
+    return `
+    <div class="summary-wrap">
+      <div class="summary-icon">🌀</div>
+      <div class="summary-title">So Close!</div>
+      <div class="fail-note">Scored ${quiz.correct}/${quiz.list.length} — needed ${need} to pass. No XP lost, just run it back.</div>
+      <button class="primary-btn" id="retryBoss">Retry Boss Battle</button><br><br>
+      <button class="secondary-btn" id="toDashboard">Back to the Path</button>
+    </div>`;
+  }
+}
+
+/* ============================= EVENTS ============================= */
+
+function bindEvents(){
+  const backBtn = document.getElementById('backBtn');
+  if(backBtn) backBtn.onclick = goDashboard;
+
+  document.querySelectorAll('.node').forEach(el=>{
+    el.onclick = ()=> openDay(parseInt(el.dataset.day,10));
+  });
+
+  const resetBtn = document.getElementById('resetBtn');
+  if(resetBtn) resetBtn.onclick = ()=>{
+    if(confirm('Reset all XP, badges, and unlocked days? This cannot be undone.')) resetProgress();
+  };
+
+  const flashcard = document.getElementById('flashcard');
+  if(flashcard) flashcard.onclick = flipCard;
+  const fcMiss = document.getElementById('fcMiss'); if(fcMiss) fcMiss.onclick = ()=>markCard(false);
+  const fcGot = document.getElementById('fcGot'); if(fcGot) fcGot.onclick = ()=>markCard(true);
+
+  const markWatched = document.getElementById('markWatched');
+  if(markWatched) markWatched.onclick = markVideoWatched;
+  const toPractice = document.getElementById('toPractice');
+  if(toPractice) toPractice.onclick = ()=>goSub('practice');
+
+  document.querySelectorAll('.choice-btn').forEach(el=>{
+    el.onclick = ()=> selectAnswer(parseInt(el.dataset.choice,10));
+  });
+  const nextQ = document.getElementById('nextQ');
+  if(nextQ) nextQ.onclick = nextQuestion;
+
+  const toDashboard = document.getElementById('toDashboard');
+  if(toDashboard) toDashboard.onclick = goDashboard;
+  const retry = document.getElementById('retryBoss');
+  if(retry) retry.onclick = retryBoss;
+}
+
+loadProgress();
+})();
+</script>
+</body>
+</html>
