@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Shadow Web Math Academy</title>
+<title>Shadow Web Academy</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Rubik:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
@@ -17,6 +17,8 @@
     --chakra-dim:#7a3d15;
     --suit:#e21b3c;
     --suit-dim:#5c0f1c;
+    --book:#7e5ce6;
+    --book2:#18a999;
     --gold:#ffcc3a;
     --ink:#f0eee8;
     --ink-dim:#a8a6ae;
@@ -41,10 +43,13 @@
 
   #app{max-width:720px;margin:0 auto;padding:18px 16px 60px;}
 
+  /* Book theme override: wraps reading screens, remaps chakra/suit vars */
+  .book-theme{ --chakra: var(--book); --suit: var(--book2); --chakra-dim:#3d2f6b; --suit-dim:#0d3f39; }
+
   /* ---------- Top bar ---------- */
   .topbar{
     display:flex; align-items:center; justify-content:space-between;
-    gap:12px; margin-bottom:18px;
+    gap:12px; margin-bottom:14px;
   }
   .brand{
     display:flex; align-items:center; gap:10px;
@@ -63,6 +68,16 @@
   .xp-wrap{text-align:right; flex-shrink:0;}
   .xp-num{font-family:'Bangers',cursive; font-size:22px; color:var(--gold); line-height:1;}
   .xp-label{font-size:10px; color:var(--ink-dim); letter-spacing:1.5px; text-transform:uppercase;}
+
+  /* ---------- Mode Tabs ---------- */
+  .tabbar{ display:flex; gap:8px; margin-bottom:16px; }
+  .tab-btn{
+    flex:1; text-align:center; padding:11px 8px; border-radius:12px;
+    border:1px solid var(--line); background:var(--panel); color:var(--ink-dim);
+    font-weight:700; font-size:13px; cursor:pointer;
+  }
+  .tab-btn.active{ color:var(--ink); border-color:var(--chakra); background:rgba(255,122,26,0.12); }
+  .tab-btn.active.book-tab{ border-color:var(--book); background:rgba(126,92,230,0.16); }
 
   /* ---------- Arc banner ---------- */
   .arc-banner{
@@ -85,7 +100,7 @@
     background:var(--panel); border:1px solid var(--line);
     border-radius:var(--card-radius); padding:12px 14px;
     cursor:pointer; transition:transform .15s ease, border-color .15s ease;
-    position:relative;
+    position:relative; min-height:56px;
   }
   .node:hover{ transform:translateX(2px); }
   .node.locked{ cursor:not-allowed; opacity:0.45; }
@@ -104,6 +119,15 @@
   .node .info .ns{font-size:11.5px; color:var(--ink-dim); margin-top:1px;}
   .node .badge-icon{font-size:18px; flex-shrink:0;}
   .node .lock-icon{font-size:15px; color:var(--ink-dim); flex-shrink:0;}
+
+  /* ---------- Reference hub card (reading) ---------- */
+  .hub-card{
+    background:var(--panel); border:1px solid var(--line); border-radius:var(--card-radius);
+    padding:14px 16px; margin-bottom:18px; cursor:pointer; display:flex; align-items:center; gap:14px;
+  }
+  .hub-card .hub-icon{font-size:26px;}
+  .hub-card .hub-t{font-weight:800; font-size:14.5px;}
+  .hub-card .hub-s{font-size:11.5px; color:var(--ink-dim);}
 
   /* ---------- Reward shelf ---------- */
   .shelf-title{font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--ink-dim); margin:22px 0 10px;}
@@ -132,58 +156,80 @@
   .day-mission{ font-size:13.5px; margin-top:8px; color:var(--ink); background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:10px 12px; }
 
   .levels-row{ display:flex; gap:6px; margin:16px 0 18px; }
-  .level-pip{
-    flex:1; height:6px; border-radius:4px; background:var(--panel-2);
-  }
+  .level-pip{ flex:1; height:6px; border-radius:4px; background:var(--panel-2); }
   .level-pip.active{ background:var(--chakra); }
   .level-pip.pastdone{ background:var(--ok); }
-  .suit .level-pip.active{ background:var(--suit); }
-  .suit .level-pip.pastdone{ background:var(--ok); }
 
   .level-label{ font-size:11px; letter-spacing:1.5px; text-transform:uppercase; color:var(--ink-dim); margin-bottom:10px; }
 
-  /* Flashcard */
-  .flash-stage{ display:flex; flex-direction:column; align-items:center; gap:16px; }
+  /* ---------- Adaptive Flashcard ---------- */
+  .flash-stage{ display:flex; flex-direction:column; align-items:center; gap:14px; }
+  .bonus-tag{
+    display:inline-block; background:rgba(255,204,58,0.16); color:var(--gold);
+    border:1px solid rgba(255,204,58,0.4); border-radius:20px; padding:4px 12px;
+    font-size:11px; font-weight:700;
+  }
   .flashcard{
-    width:100%; max-width:420px; min-height:170px; border-radius:20px;
+    width:100%; max-width:440px; min-height:120px; border-radius:20px;
     background:linear-gradient(160deg, var(--panel-2), var(--panel));
     border:1px solid var(--line); display:flex; align-items:center; justify-content:center;
-    text-align:center; padding:24px; cursor:pointer; position:relative;
+    text-align:center; padding:24px; position:relative;
   }
-  .flashcard .fc-tag{ position:absolute; top:12px; left:14px; font-size:10px; letter-spacing:1.5px; color:var(--ink-dim); text-transform:uppercase; }
-  .flashcard .fc-q{ font-family:'Bangers',cursive; font-size:30px; letter-spacing:0.5px; }
-  .flashcard .fc-a{ font-family:'Bangers',cursive; font-size:30px; color:var(--gold); }
-  .flashcard .fc-hint{ position:absolute; bottom:10px; font-size:10.5px; color:var(--ink-dim); }
-  .fc-controls{ display:flex; gap:10px; width:100%; max-width:420px; }
-  .fc-btn{ flex:1; padding:12px; border-radius:12px; border:none; font-weight:700; font-size:13.5px; cursor:pointer; }
-  .fc-btn.miss{ background:rgba(255,77,94,0.14); color:var(--bad); border:1px solid rgba(255,77,94,0.4);}
-  .fc-btn.got{ background:rgba(61,220,132,0.14); color:var(--ok); border:1px solid rgba(61,220,132,0.4);}
+  .flashcard .fc-q{ font-family:'Bangers',cursive; font-size:27px; letter-spacing:0.5px; }
   .fc-progress{ font-size:12px; color:var(--ink-dim); }
+  .fc-attempts{ font-size:11.5px; color:var(--ink-dim); }
+  .fc-input-row{ display:flex; gap:8px; width:100%; max-width:440px; }
+  .fc-input{
+    flex:1; padding:13px 14px; border-radius:12px; border:1px solid var(--line);
+    background:var(--panel-2); color:var(--ink); font-size:16px; font-family:'JetBrains Mono',monospace;
+  }
+  .fc-input:focus{ outline:none; border-color:var(--chakra); }
+  .fc-submit{
+    padding:13px 20px; border-radius:12px; border:none; background:var(--chakra);
+    color:#1a0d02; font-weight:800; cursor:pointer; font-size:14px;
+  }
+  .fc-feedback{ font-size:13px; font-weight:700; width:100%; max-width:440px; }
+  .fc-feedback.ok{ color:var(--ok); }
+  .fc-feedback.bad{ color:var(--bad); }
+  .fc-hintbox{
+    width:100%; max-width:440px; background:rgba(255,204,58,0.1); border:1px solid rgba(255,204,58,0.35);
+    border-radius:12px; padding:11px 13px; font-size:12.5px; color:var(--ink); line-height:1.5;
+  }
+  .fc-hintbox .hb-title{ font-weight:800; color:var(--gold); font-size:10.5px; letter-spacing:1px; text-transform:uppercase; margin-bottom:4px; }
+  .fc-solutionbox{
+    width:100%; max-width:440px; background:var(--panel-2); border:1px solid var(--line);
+    border-radius:14px; padding:14px 16px; font-size:12.8px; line-height:1.6;
+  }
+  .fc-solutionbox .ss-title{ font-weight:800; font-size:11px; letter-spacing:1.2px; text-transform:uppercase; color:var(--gold); margin-bottom:8px; }
+  .fc-solutionbox ol{ margin:0; padding-left:20px; }
+  .fc-solutionbox li{ margin-bottom:5px; }
+  .fc-verify-title{ font-size:12.5px; color:var(--ink-dim); width:100%; max-width:440px; }
+  .skip-btn{
+    background:none; border:1px solid var(--line); color:var(--ink-dim);
+    padding:10px 16px; border-radius:10px; font-size:12.5px; cursor:pointer;
+  }
+  .fc-btnrow{ display:flex; gap:10px; width:100%; max-width:440px; }
 
   /* Video */
-  .video-card{
-    background:var(--panel); border:1px solid var(--line); border-radius:18px; padding:22px;
-    text-align:center;
-  }
+  .video-card{ background:var(--panel); border:1px solid var(--line); border-radius:18px; padding:22px; text-align:center; }
   .video-card .vc-icon{ font-size:34px; margin-bottom:8px; }
   .video-card .vc-label{ font-family:'Bangers',cursive; font-size:20px; margin-bottom:6px; }
   .video-card .vc-note{ font-size:12.5px; color:var(--ink-dim); margin-bottom:16px; }
   .primary-btn{
-    display:inline-block; background:var(--chakra); color:#1a0d02; text-decoration:none;
-    font-weight:800; padding:12px 20px; border-radius:12px; font-size:14px; border:none; cursor:pointer;
+    display:inline-flex; align-items:center; justify-content:center; background:var(--chakra); color:#1a0d02; text-decoration:none;
+    font-weight:800; padding:13px 20px; border-radius:12px; font-size:14px; border:none; cursor:pointer; min-height:46px;
   }
-  .suit .primary-btn{ background:var(--suit); color:#fff; }
   .secondary-btn{
-    display:inline-block; background:var(--panel-2); color:var(--ink); text-decoration:none;
-    font-weight:700; padding:12px 20px; border-radius:12px; font-size:14px; border:1px solid var(--line); cursor:pointer; margin-top:10px;
+    display:inline-flex; align-items:center; justify-content:center; background:var(--panel-2); color:var(--ink); text-decoration:none;
+    font-weight:700; padding:13px 20px; border-radius:12px; font-size:14px; border:1px solid var(--line); cursor:pointer; margin-top:10px; min-height:46px;
   }
 
-  /* Quiz (practice + boss) */
-  .quiz-q{ font-size:17px; font-weight:700; margin-bottom:14px; line-height:1.4; }
+  /* Quiz (practice + boss + reading) */
+  .quiz-q{ font-size:16.5px; font-weight:700; margin-bottom:14px; line-height:1.4; }
   .quiz-choices{ display:flex; flex-direction:column; gap:9px; margin-bottom:14px;}
   .choice-btn{
     text-align:left; padding:13px 14px; border-radius:12px; border:1px solid var(--line);
-    background:var(--panel); color:var(--ink); font-size:14.5px; cursor:pointer; font-family:'Rubik',sans-serif;
+    background:var(--panel); color:var(--ink); font-size:14.5px; cursor:pointer; font-family:'Rubik',sans-serif; min-height:48px;
   }
   .choice-btn.correct{ border-color:var(--ok); background:rgba(61,220,132,0.14); }
   .choice-btn.wrong{ border-color:var(--bad); background:rgba(255,77,94,0.14); }
@@ -197,6 +243,27 @@
   .boss-meter-label{ display:flex; justify-content:space-between; font-size:11px; color:var(--ink-dim); margin-bottom:5px; }
   .boss-meter{ height:10px; border-radius:6px; background:var(--panel-2); overflow:hidden; border:1px solid var(--line); }
   .boss-meter-fill{ height:100%; background:linear-gradient(90deg, var(--suit), var(--chakra)); transition:width .3s ease; }
+
+  /* Reading specific */
+  .recap-card{ background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:16px 18px; font-size:14px; line-height:1.6; margin-bottom:14px; }
+  .vocab-card{ background:rgba(126,92,230,0.1); border:1px solid rgba(126,92,230,0.35); border-radius:14px; padding:13px 15px; margin-bottom:16px; }
+  .vocab-card .v-term{ font-weight:800; font-size:13.5px; color:var(--book); margin-bottom:3px; }
+  .vocab-card .v-def{ font-size:12.8px; color:var(--ink); line-height:1.5; }
+  .challenge-card{ background:var(--panel); border:1px dashed var(--book); border-radius:14px; padding:16px 18px; font-size:14px; line-height:1.6; margin-bottom:16px; }
+  .challenge-card .ch-tag{ font-size:10.5px; letter-spacing:1.5px; text-transform:uppercase; color:var(--book); font-weight:800; margin-bottom:6px; }
+  .ref-section{ background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:16px 18px; margin-bottom:14px; }
+  .ref-section h3{ font-family:'Bangers',cursive; font-size:19px; margin:0 0 10px; letter-spacing:0.5px; color:var(--book); }
+  .ref-section p{ font-size:13.5px; line-height:1.65; margin:0 0 8px; }
+  .char-row{ display:flex; gap:10px; margin-bottom:10px; }
+  .char-row .cname{ font-weight:800; font-size:13px; flex-shrink:0; width:150px; }
+  .char-row .cdesc{ font-size:12.8px; color:var(--ink-dim); line-height:1.5; }
+  .glossary-item{ margin-bottom:9px; }
+  .glossary-item b{ color:var(--book); }
+  .fact-item{ font-size:13px; margin-bottom:7px; padding-left:16px; position:relative; }
+  .fact-item::before{ content:"✦"; position:absolute; left:0; color:var(--book2); }
+  .quote-box{ background:rgba(24,169,153,0.1); border:1px solid rgba(24,169,153,0.35); border-radius:14px; padding:16px 18px; text-align:center; }
+  .quote-box .qq{ font-family:'Bangers',cursive; font-size:20px; color:var(--book2); }
+  .quote-box .qa{ font-size:11.5px; color:var(--ink-dim); margin-top:6px; }
 
   /* Summary */
   .summary-wrap{ text-align:center; padding:20px 10px; }
@@ -212,21 +279,16 @@
   ::selection{ background:var(--chakra); color:#1a0d02; }
   a{ color:inherit; }
 
-  /* ---------- Touch targets ---------- */
-  .choice-btn{ min-height:48px; }
-  .fc-btn{ min-height:48px; }
-  .primary-btn, .secondary-btn{ min-height:46px; display:inline-flex; align-items:center; justify-content:center; }
-  .node{ min-height:56px; }
-
   /* ---------- Mobile ---------- */
   @media (max-width:480px){
     #app{ padding:12px 10px 50px; }
-    .topbar{ margin-bottom:14px; }
+    .topbar{ margin-bottom:12px; }
     .brand-mark{ width:34px;height:34px;font-size:16px;border-radius:8px; }
     .brand-text .t1{ font-size:9px; letter-spacing:1.8px; }
     .brand-text .t2{ font-size:18px; }
     .xp-num{ font-size:19px; }
     .xp-label{ font-size:9px; }
+    .tab-btn{ font-size:12px; padding:10px 6px; }
     .arc-banner{ padding:11px 12px; }
     .node{ padding:11px 12px; gap:10px; border-radius:13px; }
     .node .num{ width:32px;height:32px;font-size:14px;border-radius:8px; }
@@ -236,20 +298,22 @@
     .shelf-item{ font-size:11px; padding:10px 6px; }
     .day-title{ font-size:23px; }
     .day-mission{ font-size:12.5px; padding:9px 11px; }
-    .flashcard{ min-height:150px; padding:20px 16px; }
-    .flashcard .fc-q, .flashcard .fc-a{ font-size:24px; }
-    .fc-controls{ flex-direction:column; }
+    .flashcard{ min-height:110px; padding:20px 16px; }
+    .flashcard .fc-q{ font-size:22px; }
+    .fc-input-row{ flex-direction:column; }
+    .fc-btnrow{ flex-direction:column; }
     .video-card{ padding:18px 14px; }
     .quiz-q{ font-size:15.5px; }
     .choice-btn{ font-size:13.5px; padding:12px 13px; }
     .primary-btn, .secondary-btn{ width:100%; padding:13px 16px; font-size:13.5px; }
     .summary-title{ font-size:25px; }
+    .char-row{ flex-direction:column; gap:2px; }
+    .char-row .cname{ width:auto; }
   }
-
   @media (max-width:360px){
     .shelf{ grid-template-columns:repeat(2,1fr); }
     .node .info .nt{ font-size:12.5px; }
-    .flashcard .fc-q, .flashcard .fc-a{ font-size:21px; }
+    .flashcard .fc-q{ font-size:20px; }
   }
 </style>
 </head>
@@ -259,14 +323,256 @@
 <script>
 (function(){
 
-/* ============================= DATA ============================= */
+/* ============================================================
+   HELPERS
+   ============================================================ */
+function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
+function rand(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+function esc(s){ return String(s); }
+function parseNum(str){
+  if(str==null) return NaN;
+  let s = String(str).trim().replace(/\$/g,'').replace(/,/g,'').replace(/\u2212/g,'-');
+  return parseFloat(s);
+}
+function parseFrac(str){
+  if(str==null) return null;
+  let s = String(str).trim().replace(/\s+/g,'');
+  let m = s.match(/^(-?\d+)\/(\d+)$/);
+  if(m) return { n: parseInt(m[1],10), d: parseInt(m[2],10) };
+  let m2 = s.match(/^(-?\d+(?:\.\d+)?)$/);
+  if(m2) return { n: parseFloat(m2[1]), d: 1 };
+  return null;
+}
+function fracVal(f){ return f.n/f.d; }
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+}
 
+/* ============================================================
+   ADAPTIVE FLASHCARD ENGINE (GEN)
+   Each type exposes: q(p), display(p), check(p,input), hints(p), steps(p), harder(p), similar(p)
+   ============================================================ */
+const GEN = {
+  mult: {
+    q(p){ return `${p.a} × ${p.b} = ?`; },
+    val(p){ return p.a*p.b; },
+    display(p){ return String(p.a*p.b); },
+    check(p, input){ const v=parseNum(input); return !isNaN(v) && Math.abs(v-p.a*p.b)<0.001; },
+    hints(p){
+      const half=Math.floor(p.b/2), rest=p.b-half;
+      return [
+        `Think of ${p.a} × ${p.b} as ${p.a} groups of ${p.b}.`,
+        `Split it up: ${p.a} × ${half} = ${p.a*half}, and ${p.a} × ${rest} = ${p.a*rest}. Add those two answers together.`
+      ];
+    },
+    steps(p){
+      const half=Math.floor(p.b/2), rest=p.b-half;
+      return [
+        `We want ${p.a} × ${p.b}.`,
+        `Break ${p.b} into ${half} + ${rest}.`,
+        `${p.a} × ${half} = ${p.a*half}`,
+        `${p.a} × ${rest} = ${p.a*rest}`,
+        `Add the pieces: ${p.a*half} + ${p.a*rest} = ${p.a*p.b}`
+      ];
+    },
+    harder(p){ return { a: clamp(p.a+rand(1,3),6,15), b: clamp(p.b+rand(1,3),6,15) }; },
+    similar(p){ return { a: rand(6,12), b: rand(6,12) }; }
+  },
+  div: {
+    q(p){ return `${p.a} ÷ ${p.b} = ?`; },
+    display(p){ return String(p.a/p.b); },
+    check(p, input){ const v=parseNum(input); return !isNaN(v) && Math.abs(v-p.a/p.b)<0.001; },
+    hints(p){
+      return [
+        `Ask yourself: ${p.b} times what number equals ${p.a}?`,
+        `Try counting up by ${p.b}s: ${p.b}, ${p.b*2}, ${p.b*3}... until you reach ${p.a}.`
+      ];
+    },
+    steps(p){
+      const k=p.a/p.b;
+      return [
+        `We're asking: ${p.b} × ? = ${p.a}`,
+        `Count up by ${p.b}s until you hit ${p.a}.`,
+        `${p.b} × ${k} = ${p.a}`,
+        `So ${p.a} ÷ ${p.b} = ${k}`
+      ];
+    },
+    harder(p){ const b=clamp(p.b+rand(1,2),6,12); const k=clamp(Math.round(p.a/p.b)+rand(1,2),6,12); return {a:b*k, b}; },
+    similar(p){ const b=rand(6,11); const k=rand(6,11); return {a:b*k, b}; }
+  },
+  fracCompare: {
+    q(p){ return `Which is bigger: ${p.n1}/${p.d1} or ${p.n2}/${p.d2}?`; },
+    biggerVal(p){ return (p.n1/p.d1) >= (p.n2/p.d2) ? p.n1/p.d1 : p.n2/p.d2; },
+    biggerStr(p){ return (p.n1/p.d1) >= (p.n2/p.d2) ? `${p.n1}/${p.d1}` : `${p.n2}/${p.d2}`; },
+    display(p){ return this.biggerStr(p); },
+    check(p, input){ const f=parseFrac(input); if(!f) return false; return Math.abs(fracVal(f)-this.biggerVal(p))<0.01; },
+    hints(p){
+      return [
+        `Turn both into decimals: ${p.n1}/${p.d1} ≈ ${(p.n1/p.d1).toFixed(2)}, and ${p.n2}/${p.d2} ≈ ${(p.n2/p.d2).toFixed(2)}.`,
+        `Whichever decimal is bigger is the bigger fraction.`
+      ];
+    },
+    steps(p){
+      return [
+        `${p.n1}/${p.d1} ≈ ${(p.n1/p.d1).toFixed(2)}`,
+        `${p.n2}/${p.d2} ≈ ${(p.n2/p.d2).toFixed(2)}`,
+        `${this.biggerStr(p)} is the larger fraction.`
+      ];
+    },
+    harder(p){ const pool=[[5,6,7,8],[3,4,4,5],[7,8,5,6],[5,9,4,7],[7,10,4,5]]; const c=pool[rand(0,pool.length-1)]; return {n1:c[0],d1:c[1],n2:c[2],d2:c[3]}; },
+    similar(p){ return this.harder(p); }
+  },
+  fracEquiv: {
+    q(p){ return `Which fraction equals the same amount as ${p.n}/${p.d}?`; },
+    display(p){ return `${p.n*2}/${p.d*2}`; },
+    check(p, input){ const f=parseFrac(input); if(!f||f.d===0||f.n===0) return false; return Math.abs(f.n*p.d - p.n*f.d) < 0.001; },
+    hints(p){
+      return [
+        `Multiply the top number and the bottom number by the same number.`,
+        `Try multiplying both by 2: ${p.n} × 2 = ${p.n*2}, and ${p.d} × 2 = ${p.d*2}.`
+      ];
+    },
+    steps(p){
+      return [
+        `Pick a number to multiply by, like 2.`,
+        `${p.n} × 2 = ${p.n*2}`,
+        `${p.d} × 2 = ${p.d*2}`,
+        `So ${p.n*2}/${p.d*2} is the same amount as ${p.n}/${p.d}.`
+      ];
+    },
+    harder(p){ const pool=[[3,7],[4,9],[5,7],[2,9],[3,10]]; const c=pool[rand(0,pool.length-1)]; return {n:c[0], d:c[1]}; },
+    similar(p){ return this.harder(p); }
+  },
+  fracAdd: {
+    q(p){ return `${p.n1}/${p.d} + ${p.n2}/${p.d} = ?`; },
+    display(p){ return `${p.n1+p.n2}/${p.d}`; },
+    check(p, input){ const f=parseFrac(input); if(!f||f.d===0) return false; return Math.abs(fracVal(f)-(p.n1+p.n2)/p.d)<0.01; },
+    hints(p){
+      return [
+        `The bottom numbers already match, so you only need to add the top numbers.`,
+        `${p.n1} + ${p.n2} = ${p.n1+p.n2}. Keep the bottom number as ${p.d}.`
+      ];
+    },
+    steps(p){
+      return [
+        `Bottom numbers match (${p.d}), so just add the tops.`,
+        `${p.n1} + ${p.n2} = ${p.n1+p.n2}`,
+        `Answer: ${p.n1+p.n2}/${p.d}`
+      ];
+    },
+    harder(p){ const pool=[[3,4,9],[2,5,8],[4,3,10],[5,4,11],[3,5,12]]; const c=pool[rand(0,pool.length-1)]; return {n1:c[0], n2:c[1], d:c[2]}; },
+    similar(p){ return this.harder(p); }
+  },
+  decimal: {
+    q(p){ const fmt=v=>p.money?`$${v.toFixed(2)}`:`${v}`; return `${fmt(p.a)} ${p.op} ${fmt(p.b)} = ?`; },
+    val(p){ return p.op==='+' ? p.a+p.b : p.a-p.b; },
+    display(p){ const v=this.val(p); return p.money?`$${v.toFixed(2)}`:String(Math.round(v*100)/100); },
+    check(p, input){ const v=parseNum(input); return !isNaN(v) && Math.abs(v-this.val(p))<0.01; },
+    hints(p){
+      return [
+        `Line up the decimal points, just like lining up ones, tens, and hundreds.`,
+        `${p.op==='+'?'Add':'Subtract'} column by column, then bring the decimal point straight down.`
+      ];
+    },
+    steps(p){
+      return [
+        `Line up ${p.a} and ${p.b} by their decimal points.`,
+        `${p.op==='+'?'Add':'Subtract'} starting from the right-most column.`,
+        `Answer: ${this.display(p)}`
+      ];
+    },
+    harder(p){ return { a:+(p.a+rand(1,3)+0.05).toFixed(2), b:+(p.b+rand(1,2)+0.1).toFixed(2), op:p.op, money:p.money }; },
+    similar(p){ return this.harder(p); }
+  },
+  negative: {
+    q(p){ return `${p.a} ${p.op} ${p.b} = ?`; },
+    val(p){ return p.op==='+' ? p.a+p.b : p.a-p.b; },
+    display(p){ return String(this.val(p)); },
+    check(p, input){ const v=parseNum(input); return !isNaN(v) && Math.abs(v-this.val(p))<0.001; },
+    hints(p){
+      return [
+        `Picture a number line. Start at ${p.a}.`,
+        p.op==='+' ? `Moving by ${p.b} means stepping ${p.b>=0?'right':'left'} ${Math.abs(p.b)} spaces.` : `Subtracting ${p.b} means stepping left ${Math.abs(p.b)} spaces from ${p.a}.`
+      ];
+    },
+    steps(p){
+      return [
+        `Start at ${p.a} on the number line.`,
+        p.op==='+' ? `Move ${Math.abs(p.b)} spaces ${p.b>=0?'right':'left'}.` : `Subtracting is the same as adding the opposite, so move ${Math.abs(p.b)} spaces left.`,
+        `You land on ${this.val(p)}.`
+      ];
+    },
+    harder(p){ return { a: p.a + (p.a<0?-rand(1,3):rand(1,3)), b: p.b + rand(1,3), op:p.op }; },
+    similar(p){ return { a:-rand(2,10), b: rand(2,10)*(Math.random()<0.5?-1:1), op: Math.random()<0.5?'+':'-' }; }
+  },
+  oneStep: {
+    q(p){
+      if(p.kind==='addEq') return `x + ${p.add} = ${p.result}`;
+      if(p.kind==='subEq') return `x − ${p.sub} = ${p.result}`;
+      if(p.kind==='mulEq') return `${p.coef}x = ${p.result}`;
+      if(p.kind==='divEq') return `x / ${p.coef} = ${p.result}`;
+    },
+    val(p){
+      if(p.kind==='addEq') return p.result-p.add;
+      if(p.kind==='subEq') return p.result+p.sub;
+      if(p.kind==='mulEq') return p.result/p.coef;
+      if(p.kind==='divEq') return p.result*p.coef;
+    },
+    display(p){ return String(this.val(p)); },
+    check(p, input){ let s=String(input).trim().replace(/^x\s*=\s*/i,''); const v=parseNum(s); return !isNaN(v) && Math.abs(v-this.val(p))<0.001; },
+    hints(p){
+      if(p.kind==='addEq') return [`To get x alone, undo the "+ ${p.add}" by subtracting ${p.add} from both sides.`, `${p.result} − ${p.add} = ?`];
+      if(p.kind==='subEq') return [`To get x alone, undo the "− ${p.sub}" by adding ${p.sub} to both sides.`, `${p.result} + ${p.sub} = ?`];
+      if(p.kind==='mulEq') return [`To get x alone, undo the "× ${p.coef}" by dividing both sides by ${p.coef}.`, `${p.result} ÷ ${p.coef} = ?`];
+      if(p.kind==='divEq') return [`To get x alone, undo the "÷ ${p.coef}" by multiplying both sides by ${p.coef}.`, `${p.result} × ${p.coef} = ?`];
+    },
+    steps(p){
+      if(p.kind==='addEq') return [`x + ${p.add} = ${p.result}`, `Subtract ${p.add} from both sides.`, `x = ${p.result} − ${p.add} = ${this.val(p)}`];
+      if(p.kind==='subEq') return [`x − ${p.sub} = ${p.result}`, `Add ${p.sub} to both sides.`, `x = ${p.result} + ${p.sub} = ${this.val(p)}`];
+      if(p.kind==='mulEq') return [`${p.coef}x = ${p.result}`, `Divide both sides by ${p.coef}.`, `x = ${p.result} ÷ ${p.coef} = ${this.val(p)}`];
+      if(p.kind==='divEq') return [`x / ${p.coef} = ${p.result}`, `Multiply both sides by ${p.coef}.`, `x = ${p.result} × ${p.coef} = ${this.val(p)}`];
+    },
+    harder(p){
+      const bump=rand(2,4);
+      if(p.kind==='addEq') return {kind:'addEq', add:p.add+bump, result:p.result+bump*2};
+      if(p.kind==='subEq') return {kind:'subEq', sub:p.sub+bump, result:p.result+bump};
+      if(p.kind==='mulEq') return {kind:'mulEq', coef:p.coef, result:p.result+p.coef*bump};
+      if(p.kind==='divEq') return {kind:'divEq', coef:p.coef, result:p.result+bump};
+    },
+    similar(p){ return this.harder(p); }
+  },
+  manual: {
+    q(p){ return p.q; },
+    display(p){ return String(p.answer); },
+    check(p, input){
+      if(typeof p.answer === 'string' && p.answer.indexOf('/')>-1){
+        const f=parseFrac(input); if(!f) return false;
+        const target=parseFrac(p.answer);
+        return Math.abs(fracVal(f)-fracVal(target))<0.01;
+      }
+      const v=parseNum(input); const t=parseNum(p.answer);
+      return !isNaN(v) && Math.abs(v-t)<0.01;
+    },
+    hints(p){ return p.hints; },
+    steps(p){ return p.steps; },
+    harder(p){ return null; },
+    similar(p){ return p; }
+  }
+};
+
+/* ============================================================
+   MATH DAYS DATA
+   ============================================================ */
 const DAYS = [
-{
-  day:1, arc:'chakra', title:"Multiplication Mastery", subtitle:"Naruto Academy Entrance Exam",
-  mission:"Before any real training begins, every ninja must know their times tables cold. Master these and division, fractions, and algebra all get easier.",
+{ day:1, arc:'chakra', title:"Multiplication Mastery", subtitle:"Naruto Academy Entrance Exam",
+  mission:"Before any real training begins, every ninja must know their times tables cold.",
   video:{label:"Math Antics — Multiplication", url:"https://www.youtube.com/results?search_query=math+antics+multiplication"},
-  flashcards:[["8 × 7","56"],["6 × 9","54"],["12 × 11","132"],["4 × 8","32"],["9 × 5","45"],["7 × 7","49"]],
+  flashcards:[
+    {type:'mult',params:{a:8,b:7}},{type:'mult',params:{a:6,b:9}},{type:'mult',params:{a:12,b:11}},
+    {type:'mult',params:{a:4,b:8}},{type:'mult',params:{a:9,b:5}},{type:'mult',params:{a:7,b:7}}
+  ],
   practice:[
     {q:"6 × 9 = ?", choices:["45","54","56","64"], correct:1},
     {q:"8 × 8 = ?", choices:["54","56","64","72"], correct:2},
@@ -283,11 +589,13 @@ const DAYS = [
     {q:"6 × 7 = ?", choices:["36","42","48","49"], correct:1}
   ]
 },
-{
-  day:2, arc:'chakra', title:"Division Detective", subtitle:"Spider-Man Web Training",
-  mission:"Division is just multiplication in reverse — like tracing a web back to where it was shot from. Fact families make this fast.",
+{ day:2, arc:'chakra', title:"Division Detective", subtitle:"Spider-Man Web Training",
+  mission:"Division is just multiplication in reverse — like tracing a web back to its source.",
   video:{label:"Math Antics — Division", url:"https://www.youtube.com/results?search_query=math+antics+division"},
-  flashcards:[["84 ÷ 7","12"],["36 ÷ 6","6"],["72 ÷ 8","9"],["54 ÷ 9","6"],["48 ÷ 6","8"],["63 ÷ 7","9"]],
+  flashcards:[
+    {type:'div',params:{a:84,b:7}},{type:'div',params:{a:36,b:6}},{type:'div',params:{a:72,b:8}},
+    {type:'div',params:{a:54,b:9}},{type:'div',params:{a:48,b:6}},{type:'div',params:{a:63,b:7}}
+  ],
   practice:[
     {q:"56 ÷ 7 = ?", choices:["6","7","8","9"], correct:2},
     {q:"81 ÷ 9 = ?", choices:["7","8","9","10"], correct:2},
@@ -304,11 +612,14 @@ const DAYS = [
     {q:"63 ÷ 9 = ?", choices:["6","7","8","9"], correct:1}
   ]
 },
-{
-  day:3, arc:'chakra', title:"Shadow Clone Fractions", subtitle:"Comparing Fractions",
-  mission:"A fraction just shows part of a whole. Today: figure out which piece of the pizza is actually bigger.",
+{ day:3, arc:'chakra', title:"Shadow Clone Fractions", subtitle:"Comparing Fractions",
+  mission:"A fraction shows part of a whole. Today: figure out which piece is actually bigger.",
   video:{label:"Math Antics — Comparing Fractions", url:"https://www.youtube.com/results?search_query=math+antics+comparing+fractions"},
-  flashcards:[["Bigger: 1/2 or 1/3?","1/2"],["Bigger: 3/4 or 2/3?","3/4"],["Bigger: 2/5 or 1/2?","1/2"],["Bigger: 5/8 or 1/2?","5/8"],["Bigger: 1/4 or 1/3?","1/3"],["Bigger: 3/5 or 2/3?","2/3"]],
+  flashcards:[
+    {type:'fracCompare',params:{n1:1,d1:2,n2:1,d2:3}},{type:'fracCompare',params:{n1:3,d1:4,n2:2,d2:3}},
+    {type:'fracCompare',params:{n1:2,d1:5,n2:1,d2:2}},{type:'fracCompare',params:{n1:5,d1:8,n2:1,d2:2}},
+    {type:'fracCompare',params:{n1:1,d1:4,n2:1,d2:3}},{type:'fracCompare',params:{n1:3,d1:5,n2:2,d2:3}}
+  ],
   practice:[
     {q:"Which is bigger: 1/2 or 2/5?", choices:["1/2","2/5","Equal","Can't tell"], correct:0},
     {q:"Which is bigger: 3/4 or 5/6?", choices:["3/4","5/6","Equal","Can't tell"], correct:1},
@@ -325,11 +636,13 @@ const DAYS = [
     {q:"Which is bigger: 5/6 or 9/10?", choices:["5/6","9/10","Equal","Can't tell"], correct:1}
   ]
 },
-{
-  day:4, arc:'chakra', title:"Spider-Web Fractions", subtitle:"Equivalent Fractions",
+{ day:4, arc:'chakra', title:"Spider-Web Fractions", subtitle:"Equivalent Fractions",
   mission:"Different fractions can point to the exact same amount, like different web-shooter settings that land the same shot.",
-  video:{label:"Math Antics — Fractions Are Parts", url:"https://www.youtube.com/results?search_query=math+antics+equivalent+fractions"},
-  flashcards:[["Equivalent to 1/2","2/4"],["Equivalent to 2/3","4/6"],["Equivalent to 3/4","6/8"],["Equivalent to 1/5","2/10"],["Equivalent to 2/5","4/10"],["Equivalent to 3/5","6/10"]],
+  video:{label:"Math Antics — Equivalent Fractions", url:"https://www.youtube.com/results?search_query=math+antics+equivalent+fractions"},
+  flashcards:[
+    {type:'fracEquiv',params:{n:1,d:2}},{type:'fracEquiv',params:{n:2,d:3}},{type:'fracEquiv',params:{n:3,d:4}},
+    {type:'fracEquiv',params:{n:1,d:5}},{type:'fracEquiv',params:{n:2,d:5}},{type:'fracEquiv',params:{n:3,d:5}}
+  ],
   practice:[
     {q:"Which is equivalent to 1/2?", choices:["2/4","1/3","3/5","2/5"], correct:0},
     {q:"Which is equivalent to 2/3?", choices:["4/6","3/4","1/2","5/6"], correct:0},
@@ -346,11 +659,13 @@ const DAYS = [
     {q:"Which is equivalent to 5/8?", choices:["10/16","3/4","1/2","4/5"], correct:0}
   ]
 },
-{
-  day:5, arc:'chakra', title:"Combo Fractions", subtitle:"Adding Fractions (Same Bottom Number)",
-  mission:"When the bottom numbers match, adding fractions is simple — just add the top numbers, like stacking combo hits.",
+{ day:5, arc:'chakra', title:"Combo Fractions", subtitle:"Adding Fractions (Same Bottom Number)",
+  mission:"When the bottom numbers match, adding fractions is simple — just add the top numbers.",
   video:{label:"Math Antics — Adding Fractions", url:"https://www.youtube.com/results?search_query=math+antics+adding+fractions"},
-  flashcards:[["1/5 + 2/5","3/5"],["2/7 + 3/7","5/7"],["1/4 + 1/4","2/4"],["3/8 + 2/8","5/8"],["1/6 + 4/6","5/6"],["2/9 + 5/9","7/9"]],
+  flashcards:[
+    {type:'fracAdd',params:{n1:1,n2:2,d:5}},{type:'fracAdd',params:{n1:2,n2:3,d:7}},{type:'fracAdd',params:{n1:1,n2:1,d:4}},
+    {type:'fracAdd',params:{n1:3,n2:2,d:8}},{type:'fracAdd',params:{n1:1,n2:4,d:6}},{type:'fracAdd',params:{n1:2,n2:5,d:9}}
+  ],
   practice:[
     {q:"1/6 + 2/6 = ?", choices:["3/6","3/12","1/3","2/6"], correct:0},
     {q:"2/5 + 1/5 = ?", choices:["3/5","3/10","1/5","4/5"], correct:0},
@@ -367,11 +682,14 @@ const DAYS = [
     {q:"3/5 + 1/5 = ?", choices:["4/5","4/10","2/5","5/5"], correct:0}
   ]
 },
-{
-  day:6, arc:'chakra', title:"Decimal Village", subtitle:"Money & Measurements",
-  mission:"Decimals show up everywhere — prices, scores, distances. Line up the decimal points and treat it like normal addition and subtraction.",
+{ day:6, arc:'chakra', title:"Decimal Village", subtitle:"Money & Measurements",
+  mission:"Decimals show up everywhere — prices, scores, distances. Line up the decimal points.",
   video:{label:"Math Antics — Decimals", url:"https://www.youtube.com/results?search_query=math+antics+decimals"},
-  flashcards:[["0.5 + 0.25","0.75"],["1.2 + 0.3","1.5"],["$2.50 + $1.25","$3.75"],["0.75 − 0.5","0.25"],["2.0 − 0.4","1.6"],["1.1 + 1.1","2.2"]],
+  flashcards:[
+    {type:'decimal',params:{a:0.5,b:0.25,op:'+',money:false}},{type:'decimal',params:{a:1.2,b:0.3,op:'+',money:false}},
+    {type:'decimal',params:{a:2.50,b:1.25,op:'+',money:true}},{type:'decimal',params:{a:0.75,b:0.5,op:'-',money:false}},
+    {type:'decimal',params:{a:2.0,b:0.4,op:'-',money:false}},{type:'decimal',params:{a:1.1,b:1.1,op:'+',money:false}}
+  ],
   practice:[
     {q:"0.4 + 0.3 = ?", choices:["0.7","0.43","7","0.07"], correct:0},
     {q:"1.5 + 2.25 = ?", choices:["3.75","3.5","3.25","4"], correct:0},
@@ -388,11 +706,13 @@ const DAYS = [
     {q:"$8.20 + $1.90 = ?", choices:["$10.10","$9.10","$10.00","$9.90"], correct:0}
   ]
 },
-{
-  day:7, arc:'chakra', title:"Weekly Boss Battle", subtitle:"Unlock: Black Suit",
-  mission:"Everything from this week, mixed together. Beat this and the Black Suit awakens — the arc shifts from chakra training to symbiote power.",
+{ day:7, arc:'chakra', title:"Weekly Boss Battle", subtitle:"Unlock: Black Suit",
+  mission:"Everything from this week, mixed together. Beat this and the Black Suit awakens.",
   video:{label:"MashUp Math — Week 1 Review", url:"https://www.youtube.com/results?search_query=mashup+math+7th+grade+review"},
-  flashcards:[["7 × 8","56"],["63 ÷ 9","7"],["Equivalent to 1/2","2/4"],["2/5 + 2/5","4/5"],["0.75 + 0.25","1.0"],["96 ÷ 8","12"]],
+  flashcards:[
+    {type:'mult',params:{a:7,b:8}},{type:'div',params:{a:63,b:9}},{type:'fracEquiv',params:{n:1,d:2}},
+    {type:'fracAdd',params:{n1:2,n2:2,d:5}},{type:'decimal',params:{a:0.75,b:0.25,op:'+',money:false}},{type:'div',params:{a:96,b:8}}
+  ],
   practice:[
     {q:"9 × 7 = ?", choices:["56","63","72","81"], correct:1},
     {q:"72 ÷ 6 = ?", choices:["11","12","13","14"], correct:1},
@@ -413,11 +733,13 @@ const DAYS = [
   ],
   specialBadge:{icon:"🕷️", name:"Black Suit Unlocked"}
 },
-{
-  day:8, arc:'suit', title:"Symbiote Depths", subtitle:"Negative Numbers",
-  mission:"The suit takes you below zero. Negative numbers work like a number line — think 'up and down' instead of 'more and less.'",
+{ day:8, arc:'suit', title:"Symbiote Depths", subtitle:"Negative Numbers",
+  mission:"The suit takes you below zero. Think of negatives as 'up and down' a number line.",
   video:{label:"Math Antics — Negative Numbers", url:"https://www.youtube.com/results?search_query=math+antics+negative+numbers"},
-  flashcards:[["−3 + 5","2"],["−2 − 4","−6"],["5 − 8","−3"],["−6 + 2","−4"],["−1 − 1","−2"],["4 − 9","−5"]],
+  flashcards:[
+    {type:'negative',params:{a:-3,b:5,op:'+'}},{type:'negative',params:{a:-2,b:4,op:'-'}},{type:'negative',params:{a:5,b:8,op:'-'}},
+    {type:'negative',params:{a:-6,b:2,op:'+'}},{type:'negative',params:{a:-1,b:1,op:'-'}},{type:'negative',params:{a:4,b:9,op:'-'}}
+  ],
   practice:[
     {q:"−4 + 7 = ?", choices:["3","−3","11","−11"], correct:0},
     {q:"−5 − 3 = ?", choices:["−8","8","−2","2"], correct:0},
@@ -434,11 +756,14 @@ const DAYS = [
     {q:"−5 + (−2) = ?", choices:["−7","7","−3","3"], correct:0}
   ]
 },
-{
-  day:9, arc:'suit', title:"What Is X?", subtitle:"Meeting Variables",
-  mission:"A variable is a hidden value in disguise — like a hero's secret identity. Your job is to unmask it.",
+{ day:9, arc:'suit', title:"What Is X?", subtitle:"Meeting Variables",
+  mission:"A variable is a hidden value in disguise. Your job is to unmask it.",
   video:{label:"Khan Academy — Variables", url:"https://www.youtube.com/results?search_query=khan+academy+variables+intro+algebra"},
-  flashcards:[["x + 7 = 12, x = ?","5"],["x − 4 = 9, x = ?","13"],["2x = 10, x = ?","5"],["x + 3 = 8, x = ?","5"],["x − 6 = 2, x = ?","8"],["3x = 9, x = ?","3"]],
+  flashcards:[
+    {type:'oneStep',params:{kind:'addEq',add:7,result:12}},{type:'oneStep',params:{kind:'subEq',sub:4,result:9}},
+    {type:'oneStep',params:{kind:'mulEq',coef:2,result:10}},{type:'oneStep',params:{kind:'addEq',add:3,result:8}},
+    {type:'oneStep',params:{kind:'subEq',sub:6,result:2}},{type:'oneStep',params:{kind:'mulEq',coef:3,result:9}}
+  ],
   practice:[
     {q:"x + 5 = 12, x = ?", choices:["5","6","7","8"], correct:2},
     {q:"x − 3 = 10, x = ?", choices:["7","13","10","3"], correct:1},
@@ -455,11 +780,14 @@ const DAYS = [
     {q:"3x = 21, x = ?", choices:["6","7","8","63"], correct:1}
   ]
 },
-{
-  day:10, arc:'suit', title:"Chunin Exam", subtitle:"One-Step Equations",
-  mission:"Whatever you do to one side, you must do to the other. Undo the operation to set x free.",
+{ day:10, arc:'suit', title:"Chunin Exam", subtitle:"One-Step Equations",
+  mission:"Whatever you do to one side, do to the other. Undo the operation to set x free.",
   video:{label:"Khan Academy — One-Step Equations", url:"https://www.youtube.com/results?search_query=khan+academy+one+step+equations"},
-  flashcards:[["x + 5 = 12, x = ?","7"],["3x = 15, x = ?","5"],["x − 4 = 10, x = ?","14"],["x/2 = 6, x = ?","12"],["x + 9 = 13, x = ?","4"],["2x = 18, x = ?","9"]],
+  flashcards:[
+    {type:'oneStep',params:{kind:'addEq',add:5,result:12}},{type:'oneStep',params:{kind:'mulEq',coef:3,result:15}},
+    {type:'oneStep',params:{kind:'subEq',sub:4,result:10}},{type:'oneStep',params:{kind:'divEq',coef:2,result:6}},
+    {type:'oneStep',params:{kind:'addEq',add:9,result:13}},{type:'oneStep',params:{kind:'mulEq',coef:2,result:18}}
+  ],
   practice:[
     {q:"x + 6 = 14, x = ?", choices:["8","20","7","9"], correct:0},
     {q:"4x = 24, x = ?", choices:["5","6","7","96"], correct:1},
@@ -476,11 +804,22 @@ const DAYS = [
     {q:"6x = 48, x = ?", choices:["7","8","9","54"], correct:1}
   ]
 },
-{
-  day:11, arc:'suit', title:"Web Lab Order Ops", subtitle:"PEMDAS",
-  mission:"Order of operations is the recipe every equation must follow: Parentheses, Exponents, Multiply/Divide, Add/Subtract — left to right.",
+{ day:11, arc:'suit', title:"Web Lab Order Ops", subtitle:"PEMDAS",
+  mission:"Order of operations is the recipe every equation must follow: Parentheses, Exponents, Multiply/Divide, Add/Subtract.",
   video:{label:"Math Antics — Order of Operations", url:"https://www.youtube.com/results?search_query=math+antics+order+of+operations"},
-  flashcards:[["3 + 4 × 2","11"],["(5 + 3) × 2","16"],["10 − 2 × 3","4"],["(2+3) × (4−1)","15"],["6 + 8 ÷ 2","10"],["2 × (3+5) − 4","12"]],
+  flashcards:[
+    {type:'manual',params:{q:"3 + 4 × 2",answer:11,hints:["Multiplication happens before addition — do 4 × 2 first.","4 × 2 = 8. Now add: 3 + 8."],steps:["Do multiplication first: 4 × 2 = 8","Now add: 3 + 8 = 11","Answer: 11"]}},
+    {type:'manual',params:{q:"(5 + 3) × 2",answer:16,hints:["Parentheses go first — solve 5 + 3 before multiplying.","5 + 3 = 8. Now multiply: 8 × 2."],steps:["Solve inside the parentheses first: 5 + 3 = 8","Now multiply: 8 × 2 = 16","Answer: 16"]}},
+    {type:'manual',params:{q:"10 − 2 × 3",answer:4,hints:["Multiplication happens before subtraction — do 2 × 3 first.","2 × 3 = 6. Now subtract: 10 − 6."],steps:["Do multiplication first: 2 × 3 = 6","Now subtract: 10 − 6 = 4","Answer: 4"]}},
+    {type:'manual',params:{q:"(2+3) × (4−1)",answer:15,hints:["Solve both sets of parentheses first, then multiply the results.","2+3=5 and 4−1=3. Now multiply: 5 × 3."],steps:["Solve the first parentheses: 2 + 3 = 5","Solve the second parentheses: 4 − 1 = 3","Multiply the results: 5 × 3 = 15","Answer: 15"]}},
+    {type:'manual',params:{q:"6 + 8 ÷ 2",answer:10,hints:["Division happens before addition — do 8 ÷ 2 first.","8 ÷ 2 = 4. Now add: 6 + 4."],steps:["Do division first: 8 ÷ 2 = 4","Now add: 6 + 4 = 10","Answer: 10"]}},
+    {type:'manual',params:{q:"2 × (3+5) − 4",answer:12,hints:["Parentheses first, then multiply, then subtract.","3+5=8, then 2×8=16. Last step: 16 − 4."],steps:["Solve inside parentheses: 3 + 5 = 8","Multiply: 2 × 8 = 16","Subtract: 16 − 4 = 12","Answer: 12"]}}
+  ],
+  bonusPool:[
+    {q:"4 + (6 − 2) × 3",answer:16,hints:["Parentheses first, then multiply, then add.","6−2=4, then 4×3=12."],steps:["Parentheses: 6−2=4","Multiply: 4×3=12","Add: 4+12=16"]},
+    {q:"(8 − 3) × (2 + 4)",answer:30,hints:["Solve both parentheses, then multiply.","8−3=5 and 2+4=6."],steps:["8−3=5","2+4=6","5×6=30"]},
+    {q:"5 × 2 + 3 × 4",answer:22,hints:["Do both multiplications before adding.","5×2=10 and 3×4=12."],steps:["5×2=10","3×4=12","10+12=22"]}
+  ],
   practice:[
     {q:"4 + 3 × 2 = ?", choices:["14","10","11","9"], correct:1},
     {q:"(6 + 2) × 3 = ?", choices:["24","20","18","26"], correct:0},
@@ -497,32 +836,45 @@ const DAYS = [
     {q:"(9 − 4) × 2 + 1 = ?", choices:["11","13","10","9"], correct:0}
   ]
 },
-{
-  day:12, arc:'suit', title:"Field Mission", subtitle:"Real-Life Word Problems",
-  mission:"Every skill so far shows up in real life — splitting money, buying gear, tracking scores. Translate the story into math.",
+{ day:12, arc:'suit', title:"Field Mission", subtitle:"Real-Life Word Problems",
+  mission:"Every skill so far shows up in real life. Translate the story into math.",
   video:{label:"MashUp Math — Word Problems", url:"https://www.youtube.com/results?search_query=mashup+math+word+problems+grade+7"},
-  flashcards:[["Pizza: 8 slices, eat 3. Left?","5/8"],["Jersey $45, $10 off. Price?","$35"],["3 friends split $12 evenly. Each?","$4"],["4 packs at $3 each. Total?","$12"],["7 points/game × 5 games","35"],["$20 − $6.50","$13.50"]],
+  flashcards:[
+    {type:'manual',params:{q:"Pizza has 8 slices, you eat 3. What fraction is left?",answer:"5/8",hints:["Total slices minus eaten slices gives what's left.","8 − 3 = 5 slices left out of 8 total."],steps:["Start with 8 total slices.","Subtract the 3 eaten: 8 − 3 = 5.","5 out of 8 slices left = 5/8."]}},
+    {type:'manual',params:{q:"A jersey costs $45, on sale for $10 off. New price?",answer:35,hints:["Subtract the discount from the original price.","$45 − $10 = ?"],steps:["Start with $45.","Subtract the $10 discount.","$45 − $10 = $35."]}},
+    {type:'manual',params:{q:"3 friends split $12 evenly. Each gets?",answer:4,hints:["Splitting evenly means dividing.","$12 ÷ 3 = ?"],steps:["Total is $12 split 3 ways.","$12 ÷ 3 = $4.","Each friend gets $4."]}},
+    {type:'manual',params:{q:"4 packs of cards at $3 each. Total?",answer:12,hints:["Multiply the price by how many packs.","4 × $3 = ?"],steps:["4 packs at $3 each.","4 × 3 = 12.","Total is $12."]}},
+    {type:'manual',params:{q:"A team scores 7 points a game for 5 games. Total?",answer:35,hints:["Multiply points per game by number of games.","7 × 5 = ?"],steps:["7 points each game.","5 games total.","7 × 5 = 35."]}},
+    {type:'manual',params:{q:"You had $20, spent $6.50. How much is left?",answer:13.5,hints:["Subtract what was spent from the starting amount.","$20 − $6.50 = ?"],steps:["Start with $20.","Subtract $6.50 spent.","$20 − $6.50 = $13.50."]}}
+  ],
+  bonusPool:[
+    {q:"3 comic books at $4.50 each. Total?",answer:13.5,hints:["Multiply price by quantity.","3 × $4.50 = ?"],steps:["3 books at $4.50 each.","3 × 4.50 = 13.50.","Total is $13.50."]},
+    {q:"24 players split evenly into teams of 6. How many teams?",answer:4,hints:["Divide total players by players per team.","24 ÷ 6 = ?"],steps:["24 players total.","6 players per team.","24 ÷ 6 = 4 teams."]},
+    {q:"You save $5 a week. How many weeks to save $45?",answer:9,hints:["Divide the goal amount by the weekly savings.","$45 ÷ $5 = ?"],steps:["Goal: $45.","Saving $5 per week.","45 ÷ 5 = 9 weeks."]}
+  ],
   practice:[
-    {q:"A pizza has 8 slices. You eat 3. What fraction is left?", choices:["5/8","3/8","5/3","3/5"], correct:0},
+    {q:"A pizza has 8 slices. You eat 3. What fraction remains?", choices:["5/8","3/8","5/3","3/5"], correct:0},
     {q:"Movie tickets are $12 each. Cost of 4 tickets?", choices:["$48","$44","$36","$52"], correct:0},
     {q:"You have $25 and spend $9.75. How much is left?", choices:["$15.25","$16.25","$14.75","$15.75"], correct:0},
-    {q:"A recipe needs 3/4 cup sugar and you double it. How much sugar?", choices:["1 1/2 cups","3/8 cup","1 cup","2 1/4 cups"], correct:0},
+    {q:"A recipe needs 3/4 cup sugar, you double it. How much sugar?", choices:["1 1/2 cups","3/8 cup","1 cup","2 1/4 cups"], correct:0},
     {q:"A player scores x points a game, 42 total in 6 games. x = ?", choices:["6","7","8","9"], correct:1},
     {q:"Socks come in packs of 6. You need 30 socks. How many packs?", choices:["4","5","6","7"], correct:1}
   ],
   boss:[
     {q:"3 comic books at $4.50 each. Total?", choices:["$13.50","$12.50","$14.50","$13.00"], correct:0},
     {q:"24 players split evenly into x teams of 6. x = ?", choices:["3","4","5","6"], correct:1},
-    {q:"A figure costs $18, tax adds $1.44. Total?", choices:["$19.44","$18.44","$19.00","$20.44"], correct:0},
+    {q:"A figure costs $18, tax adds $1.44. Total cost?", choices:["$19.44","$18.44","$19.00","$20.44"], correct:0},
     {q:"Half of a 16-piece figure set is missing. How many pieces missing?", choices:["8","4","6","10"], correct:0},
     {q:"You save $5 a week. Weeks to save $45?", choices:["8","9","10","7"], correct:1}
   ]
 },
-{
-  day:13, arc:'suit', title:"Full Squad Review", subtitle:"Mixed Skills",
-  mission:"Everything at once, no hints on which skill is coming next — just like a real test.",
+{ day:13, arc:'suit', title:"Full Squad Review", subtitle:"Mixed Skills",
+  mission:"Everything at once, no hints on what's coming next — just like a real test.",
   video:{label:"IXL — Grade 7 Practice", url:"https://www.youtube.com/results?search_query=ixl+grade+7+math+practice"},
-  flashcards:[["9 × 8","72"],["81 ÷ 9","9"],["Equivalent to 2/5","4/10"],["1/3 + 1/3","2/3"],["−7 + 10","3"],["x + 6 = 11, x = ?","5"]],
+  flashcards:[
+    {type:'mult',params:{a:9,b:8}},{type:'div',params:{a:81,b:9}},{type:'fracEquiv',params:{n:2,d:5}},
+    {type:'fracAdd',params:{n1:1,n2:1,d:3}},{type:'negative',params:{a:-7,b:10,op:'+'}},{type:'oneStep',params:{kind:'addEq',add:6,result:11}}
+  ],
   practice:[
     {q:"7 × 6 = ?", choices:["36","42","48","49"], correct:1},
     {q:"90 ÷ 9 = ?", choices:["9","10","11","8"], correct:1},
@@ -542,11 +894,13 @@ const DAYS = [
     {q:"4 + 2 × 5 = ?", choices:["14","30","12","10"], correct:0}
   ]
 },
-{
-  day:14, arc:'suit', title:"Final Boss Battle", subtitle:"Prove You're Ready",
-  mission:"This is it. Every skill from the last 13 days, all in one fight. Win this and you walk into 7th grade as a Web-Slinger of Math.",
+{ day:14, arc:'suit', title:"Final Boss Battle", subtitle:"Prove You're Ready",
+  mission:"This is it. Every skill from the last 13 days, all in one fight.",
   video:{label:"Khan Academy — 7th Grade Math Path", url:"https://www.youtube.com/results?search_query=khan+academy+7th+grade+math"},
-  flashcards:[["11 × 9","99"],["132 ÷ 12","11"],["Equivalent to 3/8","6/16"],["2/5 + 1/5","3/5"],["−6 + (−3)","−9"],["3x = 24, x = ?","8"]],
+  flashcards:[
+    {type:'mult',params:{a:11,b:9}},{type:'div',params:{a:132,b:12}},{type:'fracEquiv',params:{n:3,d:8}},
+    {type:'fracAdd',params:{n1:2,n2:1,d:5}},{type:'negative',params:{a:-6,b:3,op:'-'}},{type:'oneStep',params:{kind:'mulEq',coef:3,result:24}}
+  ],
   practice:[
     {q:"9 × 9 = ?", choices:["81","72","90","99"], correct:0},
     {q:"108 ÷ 9 = ?", choices:["11","12","13","10"], correct:1},
@@ -584,23 +938,226 @@ function bossThreshold(day){
   return Math.ceil(day.boss.length*0.6);
 }
 
-/* ============================= STATE ============================= */
+/* ============================================================
+   READING DAYS DATA — Aru Shah and the End of Time
+   ============================================================ */
+const BOOK_REF = {
+  summary:"Aru Shah and the End of Time follows twelve-year-old Aru, who lives inside her mother's Atlanta museum and often stretches the truth to fit in. When classmates dare her to light a cursed lamp, she accidentally frees an ancient demon called the Sleeper and freezes time itself. A talking pigeon reveals that Aru is the reincarnation of one of five legendary Pandava brothers from the Hindu epic the Mahabharata, and pairs her with a second reincarnated Pandava, Mini. Together they race against a nine-day deadline, gathering keys and weapons through a strange Otherworld and the Kingdom of Death, uncovering painful truths about their guide and about Aru's own family. In the end, Aru learns that real courage isn't about being fearless — it's about showing up for the people you love, lies and all.",
+  characters:[
+    {name:"Aru Shah", desc:"12-year-old heroine who lives in her mom's museum and often bends the truth to fit in."},
+    {name:"Mini", desc:"Aru's fellow Pandava reincarnation; a careful germaphobe who becomes Aru's true soul-sister."},
+    {name:"Boo (Subala)", desc:"A pigeon guide with a hidden past — later revealed to be Shakuni, tied to the original Mahabharata story."},
+    {name:"Krithika P. Shah", desc:"Aru's mother, curator of the Museum of Ancient Indian Art and Culture."},
+    {name:"Urvashi", desc:"A celestial dancer on the Council of Guardians who tests the girls' claim to being Pandavas."},
+    {name:"Hanuman", desc:"The Monkey God, known for strength, loyalty, and epic feats."},
+    {name:"Indra", desc:"King of the heavens and god of thunder — Aru's soul-father."},
+    {name:"Dharma Raja", desc:"God of justice and death — Mini's soul-father."},
+    {name:"The Sleeper", desc:"The ancient demon Aru frees, whose plan threatens to end all of time."}
+  ],
+  glossary:[
+    {term:"Pandava", def:"One of five brothers from the Hindu epic the Mahabharata, reincarnated in the present day in this story."},
+    {term:"Mahabharata", def:"One of the great epic poems of Hindu mythology, the source for much of the book's world."},
+    {term:"The Sleeper", def:"An ancient demon whose job is to awaken the God of Destruction."},
+    {term:"Otherworld", def:"The hidden mythological world layered over our own, where gods and demons move."},
+    {term:"The Claiming", def:"A ceremony that reveals which god is a Pandava's true soul-father."},
+    {term:"Three Keys", def:"The Sprig of Youth, Bite of Adulthood, and Sip of Old Age — needed to enter the Kingdom of Death."},
+    {term:"Kingdom of Death", def:"The realm the girls must enter to find weapons and answers, without actually dying."},
+    {term:"Vahana", def:"The sacred animal a god rides or is connected to."},
+    {term:"Astra", def:"A divine weapon, often linked to a specific god or hero."},
+    {term:"Reincarnation", def:"The idea that a soul can be reborn into a brand-new life."}
+  ],
+  themes:[
+    {title:"Identity & Honesty", desc:"Aru's lies come from wanting to belong. Her arc is about learning to value her real self."},
+    {title:"Courage & Heroism", desc:"The book argues heroism is about showing up despite fear, not about being fearless."},
+    {title:"Fate vs. Choice", desc:"Mythology suggests destiny is fixed, but the characters keep choosing their own paths anyway."},
+    {title:"Found Family", desc:"Aru and Mini are opposites who become true soul-sisters through the quest."},
+    {title:"Good & Evil Aren't Simple", desc:"Both the Sleeper and Boo show that villains and helpers are rarely just one thing."}
+  ],
+  funFacts:[
+    "Published in 2018, it's the first book in the five-book Pandava Quintet.",
+    "It's part of the \"Rick Riordan Presents\" imprint, with Riordan writing the introduction.",
+    "The story draws on the Mahabharata, one of the longest epic poems in world literature.",
+    "It was nominated for the 2019 Nebula Award.",
+    "Paramount Pictures optioned the film rights shortly after the book's release.",
+    "There is also a full graphic novel adaptation of the story.",
+    "Author Roshani Chokshi has said this is one of her own favorite books she's written."
+  ],
+  quote:{ text:"It is not failure to fail.", note:"A recurring idea in the book: falling short of a goal doesn't make you a failure." }
+};
 
+const READING_DAYS = [
+  { day:1, title:"Lights, Lies, and a Cursed Lamp", pages:"pages ~1–25",
+    recap:"Aru Shah lives in her mom's museum in Atlanta and stretches the truth to fit in at her fancy school. When classmates dare her to prove a lamp is cursed, she lights it — and everything freezes, including her mom.",
+    questions:[
+      {q:"Where does Aru live?", choices:["A museum","A castle","A boarding school","A spaceship"], correct:0},
+      {q:"Why does Aru light the lamp?", choices:["Classmates dare her","She wants to see her dad","It was an accident with fire","Her mom asked her to"], correct:0},
+      {q:"What happens right after Aru lights the lamp?", choices:["Time freezes","She turns into a bird","The lamp explodes into confetti","Nothing happens"], correct:0}
+    ],
+    challenge:"Tell someone at home your own tallest tale — then tell them the true story. Which was more fun to tell?",
+    vocabTerm:"Diya (Lamp) of Bharata", vocabDef:"The cursed lamp in the museum that releases the Sleeper when lit."
+  },
+  { day:2, title:"Meet Boo", pages:"pages ~25–50",
+    recap:"A talking pigeon named Boo tells Aru she's the reincarnation of a Pandava — one of five legendary brothers from the Mahabharata — and that she must stop the demon she just freed.",
+    questions:[
+      {q:"Who is Boo really?", choices:["An ancient guide in disguise","A normal pigeon","Aru's dad","A statue"], correct:0},
+      {q:"What are the Pandavas?", choices:["Five legendary brothers from the Mahabharata","A type of lamp","Aru's classmates","A museum exhibit"], correct:0},
+      {q:"What is the demon Aru freed called?", choices:["The Sleeper","The Shadow","The Whisper","The Ancient One"], correct:0}
+    ],
+    challenge:"Draw or describe what you imagine Boo looks like mid-transformation between pigeon and ancient guide.",
+    vocabTerm:"Pandava", vocabDef:"One of five brothers from the Mahabharata, reincarnated in modern times in this story."
+  },
+  { day:3, title:"Finding Mini", pages:"pages ~50–75",
+    recap:"Aru sets off to find the other Pandava reincarnation and meets Mini, a careful germaphobe who turns out to be her soul-sister. The two are opposites, but they're stuck together on this quest.",
+    questions:[
+      {q:"What is unusual about Mini?", choices:["She's a germaphobe","She can fly","She's invisible","She hates museums"], correct:0},
+      {q:"Why do Aru and Mini need each other?", choices:["They're both Pandava reincarnations","They go to the same school","They're cousins","They both love lamps"], correct:0},
+      {q:"How do Aru and Mini first get along?", choices:["A little awkwardly at first","Perfectly from the start","Not at all, ever","They never meet"], correct:0}
+    ],
+    challenge:"If you were paired with your total opposite for an adventure, what's one thing you'd need to agree on first?",
+    vocabTerm:"Soul sister", vocabDef:"A bond between souls that can carry over between lifetimes, even between people who've never met before."
+  },
+  { day:4, title:"The Claiming", pages:"pages ~75–100",
+    recap:"At the Council of Guardians, Aru and Mini meet Urvashi and Hanuman. Through a test called the Claiming, the girls learn their soul-fathers: Aru is claimed by Indra, king of the heavens, and Mini by Dharma Raja, god of justice and death.",
+    questions:[
+      {q:"Who is Aru's soul-father?", choices:["Indra","Hanuman","Dharma Raja","The Sleeper"], correct:0},
+      {q:"Who is Mini's soul-father?", choices:["Dharma Raja","Indra","Urvashi","Boo"], correct:0},
+      {q:"What is Hanuman known for?", choices:["Being the Monkey God","Being a demon","Being a pigeon","Ruling the underworld"], correct:0}
+    ],
+    challenge:"If a god had to \"claim\" you as their child, what special power or gift would you want them to hand you?",
+    vocabTerm:"The Claiming", vocabDef:"The ceremony that reveals which god is a Pandava's true soul-father."
+  },
+  { day:5, title:"Three Keys, Nine Days", pages:"pages ~100–130",
+    recap:"Aru and Mini learn they must collect three keys — a Sprig of Youth, a Bite of Adulthood, and a Sip of Old Age — before they can enter the Kingdom of Death. They only have nine days before the Sleeper's plan can succeed.",
+    questions:[
+      {q:"What are the three keys?", choices:["Sprig of Youth, Bite of Adulthood, Sip of Old Age","A sword, shield, and crown","Three magic rings","Three golden coins"], correct:0},
+      {q:"Why do they need the keys?", choices:["To enter the Kingdom of Death safely","To open Aru's front door","To wake up Boo","To pay a toll"], correct:0},
+      {q:"How many days do they have?", choices:["Nine","Fourteen","Thirty","One"], correct:0}
+    ],
+    challenge:"Nine days is a tight deadline. Make a quick checklist like Aru might — what would you pack for an urgent quest?",
+    vocabTerm:"Kingdom of Death", vocabDef:"The realm the girls must enter to find weapons and answers, without actually dying."
+  },
+  { day:6, title:"On the Road (and in the Otherworld)", pages:"pages ~130–160",
+    recap:"Time moves strangely in the Otherworld, and the girls face early trials while collecting their keys, discovering more about their own powers — Aru's ping-pong ball turns out to hold celestial light.",
+    questions:[
+      {q:"What does Aru's ping-pong ball turn out to be?", choices:["A source of celestial light","A regular toy","A key","A disguise"], correct:0},
+      {q:"What is unusual about time in the Otherworld?", choices:["It moves differently than on Earth","It doesn't exist","It only moves backward","It's always midnight"], correct:0},
+      {q:"What is Mini's item?", choices:["A compact mirror","A sword","A crown","A lamp"], correct:0}
+    ],
+    challenge:"If you had a \"boring-looking\" object that was secretly magical, what would you want it to be and what would it do?",
+    vocabTerm:"Otherworld", vocabDef:"The hidden mythological world layered over our own, where gods, demons, and Pandavas move."
+  },
+  { day:7, title:"Halfway Boss Check", pages:"pages ~160–190",
+    recap:"The girls face the Sleeper directly for the first time, and things get more dangerous. Good spot to pause and lock in the story so far before the second half.",
+    questions:[
+      {q:"Who is trying to stop Aru and Mini at every turn?", choices:["The Sleeper","Boo","Urvashi","Hanuman"], correct:0},
+      {q:"What must Aru and Mini collect before entering the Kingdom of Death?", choices:["Three keys","Three swords","Three lamps","Three pigeons"], correct:0},
+      {q:"Who is Mini's soul-father?", choices:["Dharma Raja","Indra","The Sleeper","Hanuman"], correct:0},
+      {q:"What ancient epic are the Pandavas from?", choices:["The Mahabharata","The Odyssey","Beowulf","The Iliad"], correct:0}
+    ],
+    challenge:"Give a two-sentence recap of the story so far, like you're catching up a friend who missed the first half.",
+    vocabTerm:"Review Day", vocabDef:"No new term today — just make sure everything above still makes sense before moving on."
+  },
+  { day:8, title:"The Night Bazaar", pages:"pages ~190–220",
+    recap:"The quest leads to a strange marketplace called the Night Bazaar, where the Sleeper corners the girls again — and reveals a shocking secret: Boo isn't just a helpful guide, he's Shakuni, a figure tied to the Pandavas' past.",
+    questions:[
+      {q:"Who does the Sleeper reveal Boo really is?", choices:["Shakuni","A god","A regular pigeon","Aru's uncle"], correct:0},
+      {q:"Where does this big reveal happen?", choices:["The Night Bazaar","School","The museum","The Kingdom of Death"], correct:0},
+      {q:"How does Mini react to the news about Boo?", choices:["She's upset and leaves Aru","She laughs it off","She doesn't care","She already knew"], correct:0}
+    ],
+    challenge:"Trust is a big theme here. Describe a time you had to decide whether to still trust someone after learning something surprising about them.",
+    vocabTerm:"Shakuni", vocabDef:"A name from the original Mahabharata tied to trickery — Boo carries a complicated history under his disguise."
+  },
+  { day:9, title:"Freeing the Gods' Rides", pages:"pages ~220–250",
+    recap:"On her own for a stretch, Aru frees several vahanas — the animal companions of the gods — from the Sleeper's control. They promise to help her later when she needs them most.",
+    questions:[
+      {q:"What is a \"vahana\"?", choices:["An animal that carries a god","A type of lamp","A weapon","A kingdom"], correct:0},
+      {q:"Why were the vahanas trapped?", choices:["The Sleeper had control over them","They were sick","They ran away","They were hiding from Aru"], correct:0},
+      {q:"What do the vahanas promise Aru?", choices:["To help her when she calls","To never speak to her again","To join the Sleeper","To go back to sleep"], correct:0}
+    ],
+    challenge:"If you could free one \"trapped\" magical creature and have it as an ally, what would it be and how would it help you?",
+    vocabTerm:"Vahana", vocabDef:"The sacred animal mount linked to a particular god in Hindu mythology."
+  },
+  { day:10, title:"Reunited, Into the Kingdom", pages:"pages ~250–280",
+    recap:"Aru and Mini reunite and use their three completed keys to open the Door to Death, stepping into the Kingdom itself — tricking a pair of guardian dogs to get past the gate.",
+    questions:[
+      {q:"What do the three keys unlock?", choices:["The Door to Death","A treasure chest","Aru's front door","A cage"], correct:0},
+      {q:"Who guards the entrance to the Kingdom?", choices:["Two guardian dogs","A dragon","A giant snake","A wall of fire"], correct:0},
+      {q:"How do the girls handle the guardians?", choices:["They trick them","They fight them","They ignore them","They bribe them with food only"], correct:0}
+    ],
+    challenge:"What's a clever, non-violent trick you'd use to get past a guard who's just doing their job?",
+    vocabTerm:"Door to Death", vocabDef:"The threshold into the Kingdom of Death, unlocked using the Sprig, Bite, and Sip."
+  },
+  { day:11, title:"The Palace of Illusions", pages:"pages ~280–310",
+    recap:"Deep in the Kingdom, the girls find the Palace of Illusions — once a home for the original Pandavas — where a dangerous being nearly steals their memories. Aru has to think fast to survive.",
+    questions:[
+      {q:"What was the Palace of Illusions originally?", choices:["A home for the Pandavas","A prison","A school","A market"], correct:0},
+      {q:"What is being threatened in this chapter?", choices:["Aru and Mini's memories","Their weapons","Their food supply","Their pet"], correct:0},
+      {q:"How does Aru get out of danger?", choices:["She uses clever thinking","She runs away and gives up","Mini saves her alone","Boo saves her"], correct:0}
+    ],
+    challenge:"Memories matter a lot in this book. Ask a family member to share one memory of you that you don't remember yourself.",
+    vocabTerm:"Illusion", vocabDef:"Something that looks or feels real but is actually deceiving your senses or mind."
+  },
+  { day:12, title:"Finding the Astras", pages:"pages ~310–340",
+    recap:"The girls discover that their ordinary-looking gifts — the ping-pong ball and the compact mirror — are actually astras, legendary celestial weapons, the very thing they've been searching for all along.",
+    questions:[
+      {q:"What is an \"astra\"?", choices:["A celestial weapon","A type of pigeon","A dance","A prayer"], correct:0},
+      {q:"What turns out to be Aru's true weapon?", choices:["Her ping-pong ball","A sword","A bow","A shield"], correct:0},
+      {q:"What turns out to be Mini's true weapon?", choices:["Her compact mirror","A spear","A crown","A key"], correct:0}
+    ],
+    challenge:"The girls had powerful weapons all along without knowing it. What's a strength you have that you didn't realize was powerful until later?",
+    vocabTerm:"Astra", vocabDef:"A divine weapon in Hindu mythology, often linked to a specific god or hero."
+  },
+  { day:13, title:"Facing the Sleeper", pages:"pages ~340–360",
+    recap:"With their astras revealed, Aru and Mini prepare for the final confrontation with the Sleeper, who has ties to Aru's own past that make this fight deeply personal.",
+    questions:[
+      {q:"What makes the final fight personal for Aru?", choices:["The Sleeper is connected to her own past","She's never met him before","He's a stranger","He's her teacher"], correct:0},
+      {q:"What have Aru and Mini gathered to help them fight?", choices:["Their astras (weapons)","New pets","More classmates","Extra homework"], correct:0},
+      {q:"What's been ticking down the whole book?", choices:["The nine-day deadline","A test at school","Aru's allowance","The museum's hours"], correct:0}
+    ],
+    challenge:"Villains in this book aren't simply \"all bad.\" Name a movie or book villain you think has a reason (even a bad one) for what they do.",
+    vocabTerm:"Building to the Climax", vocabDef:"No new term today — everything is coming together for the final battle."
+  },
+  { day:14, title:"End of Time — Final Battle & Certificate", pages:"pages ~360–368 (end)",
+    recap:"Aru finds the courage to fight for the people she loves, proving heroism isn't about being fearless — it's about showing up anyway. The Sleeper is stopped for now, time unfreezes, and Aru starts to see herself differently — no longer needing to lie to feel like she belongs.",
+    questions:[
+      {q:"What does Aru prove about being a hero by the end?", choices:["Heroism is about showing up despite fear","You must never be scared","Heroes never make mistakes","Only gods can be heroes"], correct:0},
+      {q:"What happens to time once the Sleeper is dealt with?", choices:["It unfreezes","It stops forever","It speeds up","Nothing changes"], correct:0},
+      {q:"How does Aru's view of herself change by the end?", choices:["She feels less need to lie to fit in","She decides to lie more","She moves away","She forgets everything that happened"], correct:0}
+    ],
+    challenge:"Aru starts the book hiding who she is and ends it accepting herself. Write down one thing you'd like people to know about the real you.",
+    vocabTerm:"Reincarnation", vocabDef:"The idea, central to this book, that a soul can be reborn into a new life.",
+    specialBadge:{icon:"📖", name:"Pandava Reader"}
+  }
+];
+
+/* ============================================================
+   STATE
+   ============================================================ */
 const STORAGE_KEY = "shadow-web-academy-progress";
-let progress = { xp:0, unlockedDay:1, completedDays:{}, badges:[] };
+let progress = { xp:0, unlockedDay:1, completedDays:{}, badges:[], readingUnlockedDay:1, readingCompletedDays:{} };
 let ready = false;
 
-let view = { screen:'dashboard', day:null, sub:'flashcards' };
-let fc = { idx:0, deckOrder:[], correct:0 };
+let view = { mode:'math', screen:'dashboard', day:null, sub:'flashcards' };
+
+// math flashcard engine state
+let fc = null;
+// math practice/boss quiz state
 let quiz = { idx:0, correct:0, selected:null, showResult:false, list:[] };
 let videoWatched = false;
 let lastBossPassed = null;
 let lastXpGain = 0;
 
+// reading state
+let rquiz = { idx:0, correct:0, selected:null, showResult:false, list:[] };
+let challengeChecked = false;
+
 async function loadProgress(){
   try{
     const res = await window.storage.get(STORAGE_KEY, false);
-    if(res && res.value) progress = JSON.parse(res.value);
+    if(res && res.value){
+      const loaded = JSON.parse(res.value);
+      progress = Object.assign({ xp:0, unlockedDay:1, completedDays:{}, badges:[], readingUnlockedDay:1, readingCompletedDays:{} }, loaded);
+    }
   }catch(e){ /* no saved progress yet */ }
   ready = true;
   render();
@@ -609,60 +1166,120 @@ async function saveProgress(){
   try{ await window.storage.set(STORAGE_KEY, JSON.stringify(progress), false); }catch(e){}
 }
 
-function shuffle(arr){
-  const a = arr.slice();
-  for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
-  return a;
-}
+/* ============================================================
+   NAV
+   ============================================================ */
+function switchMode(mode){ view = { mode, screen:'dashboard', day:null, sub:'flashcards' }; render(); }
+function goDashboard(){ view = { mode:view.mode, screen:'dashboard', day:null, sub:'flashcards' }; render(); }
 
-/* ============================= NAV HELPERS ============================= */
-
-function goDashboard(){ view = {screen:'dashboard', day:null, sub:'flashcards'}; render(); }
-
-function openDay(dayNum){
+function openMathDay(dayNum){
   if(dayNum > progress.unlockedDay) return;
-  view = { screen:'day', day:dayNum, sub:'flashcards' };
+  view = { mode:'math', screen:'day', day:dayNum, sub:'flashcards' };
   const d = DAYS[dayNum-1];
-  fc = { idx:0, deckOrder:shuffle(d.flashcards.map((_,i)=>i)), correct:0 };
+  fc = {
+    deck: d.flashcards.map(c=>({ type:c.type, params: JSON.parse(JSON.stringify(c.params)) })),
+    idx:0, attempts:0, hintsShown:0, showSolution:false, verifying:false,
+    verifyType:null, verifyParams:null, verifyWrong:false, escalations:0, input:''
+  };
   videoWatched = false;
   render();
 }
 
-function goSub(sub){
+function goMathSub(sub){
   const d = DAYS[view.day-1];
   view.sub = sub;
-  if(sub==='practice'){
-    quiz = { idx:0, correct:0, selected:null, showResult:false, list:d.practice };
-  } else if(sub==='boss'){
-    quiz = { idx:0, correct:0, selected:null, showResult:false, list:d.boss };
-  }
+  if(sub==='practice') quiz = { idx:0, correct:0, selected:null, showResult:false, list:d.practice };
+  else if(sub==='boss') quiz = { idx:0, correct:0, selected:null, showResult:false, list:d.boss };
   render();
 }
 
-/* ============================= ACTIONS ============================= */
+function openReadingDay(dayNum){
+  if(dayNum > progress.readingUnlockedDay) return;
+  view = { mode:'reading', screen:'day', day:dayNum, sub:'recap' };
+  const rd = READING_DAYS[dayNum-1];
+  rquiz = { idx:0, correct:0, selected:null, showResult:false, list:rd.questions };
+  challengeChecked = false;
+  render();
+}
+function goReadingSub(sub){ view.sub = sub; render(); }
+function openReadingHub(){ view = { mode:'reading', screen:'hub' }; render(); }
 
-function flipCard(){ fc.flipped = !fc.flipped; render(); }
+/* ============================================================
+   MATH FLASHCARD ACTIONS
+   ============================================================ */
+function fcSubmit(inputValue){
+  const entry = fc.deck[fc.idx];
+  const type = entry.type, params = entry.params;
 
-function markCard(gotIt){
-  if(gotIt) fc.correct++;
-  fc.flipped = false;
+  if(fc.verifying){
+    const vType = fc.verifyType, vParams = fc.verifyParams;
+    const vCorrect = GEN[vType].check(vParams, inputValue);
+    if(vCorrect){
+      progress.xp += 5; lastXpGain = 5; saveProgress();
+      fcAdvance();
+    } else {
+      fc.verifyWrong = true;
+      render();
+    }
+    return;
+  }
+
+  const correct = GEN[type].check(params, inputValue);
+  if(correct){
+    const firstTry = fc.attempts===0;
+    const gained = firstTry ? 10 : 7;
+    progress.xp += gained; lastXpGain = gained; saveProgress();
+
+    if(firstTry && fc.escalations<2 && GEN[type].harder){
+      let hcard = null;
+      if(type==='manual'){
+        const d = DAYS[view.day-1];
+        if(d.bonusPool && d.bonusPool.length){
+          const bp = d.bonusPool.shift();
+          hcard = { type:'manual', params: bp, isBonus:true };
+        }
+      } else {
+        const hp = GEN[type].harder(params);
+        if(hp) hcard = { type, params: hp, isBonus:true };
+      }
+      if(hcard){ fc.deck.splice(fc.idx+1, 0, hcard); fc.escalations++; }
+    }
+    fcAdvance();
+  } else {
+    fc.attempts++;
+    if(fc.attempts < 4){
+      fc.hintsShown = Math.min(fc.attempts, GEN[type].hints(params).length);
+      render();
+    } else {
+      fc.showSolution = true;
+      const sim = GEN[type].similar ? GEN[type].similar(params) : params;
+      fc.verifying = true;
+      fc.verifyType = type;
+      fc.verifyParams = sim;
+      fc.verifyWrong = false;
+      render();
+    }
+  }
+}
+
+function fcAdvance(){
   fc.idx++;
-  if(fc.idx >= fc.deckOrder.length){
-    const gained = fc.correct*10;
-    progress.xp += gained;
-    lastXpGain = gained;
-    saveProgress();
-    goSub('video');
+  fc.attempts = 0; fc.hintsShown = 0; fc.showSolution = false;
+  fc.verifying = false; fc.verifyWrong = false; fc.input = '';
+  if(fc.idx >= fc.deck.length){
+    goMathSub('video');
     return;
   }
   render();
 }
 
-function markVideoWatched(){
-  videoWatched = true;
-  render();
-}
+function fcSkip(){ fcAdvance(); }
 
+function markVideoWatched(){ videoWatched = true; render(); }
+
+/* ============================================================
+   MATH PRACTICE / BOSS QUIZ ACTIONS
+   ============================================================ */
 function selectAnswer(choiceIdx){
   if(quiz.showResult) return;
   const q = quiz.list[quiz.idx];
@@ -671,18 +1288,12 @@ function selectAnswer(choiceIdx){
   if(choiceIdx === q.correct) quiz.correct++;
   render();
 }
-
 function nextQuestion(){
-  quiz.idx++;
-  quiz.selected = null;
-  quiz.showResult = false;
+  quiz.idx++; quiz.selected = null; quiz.showResult = false;
   if(quiz.idx >= quiz.list.length){
     if(view.sub === 'practice'){
-      const gained = 30;
-      progress.xp += gained;
-      lastXpGain = gained;
-      saveProgress();
-      goSub('boss');
+      progress.xp += 30; lastXpGain = 30; saveProgress();
+      goMathSub('boss');
     } else if(view.sub === 'boss'){
       finishBoss();
     }
@@ -690,7 +1301,6 @@ function nextQuestion(){
   }
   render();
 }
-
 function finishBoss(){
   const d = DAYS[view.day-1];
   const need = bossThreshold(d);
@@ -699,25 +1309,18 @@ function finishBoss(){
   if(passed){
     const perfect = quiz.correct === quiz.list.length;
     const gained = perfect ? 100 : 50;
-    progress.xp += gained;
-    lastXpGain = gained;
+    progress.xp += gained; lastXpGain = gained;
     if(!progress.completedDays[d.day]){
       progress.completedDays[d.day] = true;
-      progress.xp += 50; // day completion bonus
-      lastXpGain += 50;
+      progress.xp += 50; lastXpGain += 50;
     }
-    if(d.specialBadge && !progress.badges.includes(d.specialBadge.name)){
-      progress.badges.push(d.specialBadge.name);
-    }
-    if(progress.unlockedDay === d.day && d.day < DAYS.length){
-      progress.unlockedDay = d.day + 1;
-    }
+    if(d.specialBadge && !progress.badges.includes(d.specialBadge.name)) progress.badges.push(d.specialBadge.name);
+    if(progress.unlockedDay === d.day && d.day < DAYS.length) progress.unlockedDay = d.day + 1;
     saveProgress();
   }
   view.sub = 'summary';
   render();
 }
-
 function retryBoss(){
   const d = DAYS[view.day-1];
   quiz = { idx:0, correct:0, selected:null, showResult:false, list:d.boss };
@@ -725,28 +1328,65 @@ function retryBoss(){
   render();
 }
 
+/* ============================================================
+   READING ACTIONS
+   ============================================================ */
+function rSelectAnswer(choiceIdx){
+  if(rquiz.showResult) return;
+  const q = rquiz.list[rquiz.idx];
+  rquiz.selected = choiceIdx;
+  rquiz.showResult = true;
+  if(choiceIdx === q.correct){ rquiz.correct++; progress.xp += 10; lastXpGain = 10; saveProgress(); }
+  render();
+}
+function rNextQuestion(){
+  rquiz.idx++; rquiz.selected = null; rquiz.showResult = false;
+  if(rquiz.idx >= rquiz.list.length){ goReadingSub('challenge'); return; }
+  render();
+}
+function markChallengeDone(){
+  challengeChecked = true;
+  const rd = READING_DAYS[view.day-1];
+  progress.xp += 20; lastXpGain = 20;
+  if(!progress.readingCompletedDays[rd.day]){
+    progress.readingCompletedDays[rd.day] = true;
+  }
+  if(rd.specialBadge && !progress.badges.includes(rd.specialBadge.name)) progress.badges.push(rd.specialBadge.name);
+  if(progress.readingUnlockedDay === rd.day && rd.day < READING_DAYS.length) progress.readingUnlockedDay = rd.day + 1;
+  saveProgress();
+  goReadingSub('summary');
+}
+
 async function resetProgress(){
-  progress = { xp:0, unlockedDay:1, completedDays:{}, badges:[] };
+  progress = { xp:0, unlockedDay:1, completedDays:{}, badges:[], readingUnlockedDay:1, readingCompletedDays:{} };
   await saveProgress();
   goDashboard();
 }
 
-/* ============================= RENDER ============================= */
-
-function esc(s){ return String(s); }
-
+/* ============================================================
+   RENDER
+   ============================================================ */
 function render(){
   const app = document.getElementById('app');
   if(!ready){ app.innerHTML = '<div style="text-align:center;padding:80px 0;color:#a8a6ae;">Loading your academy…</div>'; return; }
 
   let html = '';
   html += renderTopbar();
+  html += renderTabs();
 
-  if(view.screen === 'dashboard'){
-    html += renderDashboard();
+  const bookWrap = view.mode==='reading';
+  html += bookWrap ? '<div class="book-theme">' : '';
+
+  if(view.mode==='math'){
+    if(view.screen==='dashboard') html += renderMathDashboard();
+    else html += renderMathDayScreen();
   } else {
-    html += renderDayScreen();
+    if(view.screen==='dashboard') html += renderReadingDashboard();
+    else if(view.screen==='hub') html += renderReadingHub();
+    else html += renderReadingDayScreen();
   }
+
+  html += bookWrap ? '</div>' : '';
 
   app.innerHTML = html;
   bindEvents();
@@ -769,7 +1409,16 @@ function renderTopbar(){
   </div>`;
 }
 
-function renderDashboard(){
+function renderTabs(){
+  return `
+  <div class="tabbar">
+    <div class="tab-btn ${view.mode==='math'?'active':''}" id="tabMath">🥋 Math Academy</div>
+    <div class="tab-btn ${view.mode==='reading'?'active book-tab':''}" id="tabReading">📖 Summer Reading</div>
+  </div>`;
+}
+
+/* ---------------- MATH: DASHBOARD ---------------- */
+function renderMathDashboard(){
   let html = '<div class="path">';
   DAYS.forEach(d=>{
     const done = !!progress.completedDays[d.day];
@@ -777,12 +1426,9 @@ function renderDashboard(){
     const current = d.day === progress.unlockedDay && !done;
     let cls = 'node';
     if(locked) cls += ' locked'; else if(done) cls += ' done'; else if(current) cls += ' current';
-    html += `<div class="${cls}" data-day="${d.day}">
+    html += `<div class="${cls}" data-mday="${d.day}">
       <div class="num">${done ? '✓' : d.day}</div>
-      <div class="info">
-        <div class="nt">${esc(d.title)}</div>
-        <div class="ns">${esc(d.subtitle)}</div>
-      </div>
+      <div class="info"><div class="nt">${esc(d.title)}</div><div class="ns">${esc(d.subtitle)}</div></div>
       ${d.specialBadge ? `<div class="badge-icon">${d.specialBadge.icon}</div>` : ''}
       ${locked ? '<div class="lock-icon">🔒</div>' : ''}
     </div>`;
@@ -792,18 +1438,13 @@ function renderDashboard(){
   html += '<div class="shelf-title">Real-World Reward Shelf</div><div class="shelf">';
   REWARDS.forEach(r=>{
     const earned = progress.xp >= r.xp;
-    html += `<div class="shelf-item ${earned?'earned':''}">
-      <span class="si-icon">${r.icon}</span>
-      ${r.label}<br><span class="mono">${r.xp} XP</span>
-    </div>`;
+    html += `<div class="shelf-item ${earned?'earned':''}"><span class="si-icon">${r.icon}</span>${r.label}<br><span class="mono">${r.xp} XP</span></div>`;
   });
   html += '</div>';
 
   if(progress.badges.length){
     html += '<div class="shelf-title">Badges Earned</div><div class="shelf">';
-    progress.badges.forEach(b=>{
-      html += `<div class="shelf-item earned"><span class="si-icon">🎖️</span>${esc(b)}</div>`;
-    });
+    progress.badges.forEach(b=>{ html += `<div class="shelf-item earned"><span class="si-icon">🎖️</span>${esc(b)}</div>`; });
     html += '</div>';
   }
 
@@ -811,15 +1452,13 @@ function renderDashboard(){
   return html;
 }
 
-function renderDayScreen(){
+/* ---------------- MATH: DAY SCREEN ---------------- */
+function renderMathDayScreen(){
   const d = DAYS[view.day-1];
   const arcClass = d.arc === 'suit' ? 'suit' : 'chakra';
   let html = `<div class="${arcClass}">`;
   html += `<button class="back-btn" id="backBtn">← Back to path</button>`;
-  html += `<div class="day-header">
-    <div class="day-title">Day ${d.day}: ${esc(d.title)}</div>
-    <div class="day-sub">${esc(d.subtitle)}</div>
-  </div>`;
+  html += `<div class="day-header"><div class="day-title">Day ${d.day}: ${esc(d.title)}</div><div class="day-sub">${esc(d.subtitle)}</div></div>`;
 
   if(view.sub !== 'summary'){
     html += `<div class="day-mission">${esc(d.mission)}</div>`;
@@ -836,35 +1475,51 @@ function renderDayScreen(){
 
   if(view.sub === 'flashcards') html += renderFlashcards(d);
   else if(view.sub === 'video') html += renderVideo(d);
-  else if(view.sub === 'practice') html += renderQuiz(d, 'Practice Mission');
-  else if(view.sub === 'boss') html += renderQuiz(d, 'Boss Battle', true);
-  else if(view.sub === 'summary') html += renderSummary(d);
+  else if(view.sub === 'practice') html += renderMathQuiz(d, 'Practice Mission');
+  else if(view.sub === 'boss') html += renderMathQuiz(d, 'Boss Battle', true);
+  else if(view.sub === 'summary') html += renderMathSummary(d);
 
   html += '</div>';
   return html;
 }
 
 function renderFlashcards(d){
-  const total = fc.deckOrder.length;
+  const total = fc.deck.length;
   if(fc.idx >= total) return '<div style="text-align:center;color:#a8a6ae;">Loading next level…</div>';
-  const cardData = d.flashcards[fc.deckOrder[fc.idx]];
-  const q = cardData[0], a = cardData[1];
-  return `
-  <div class="level-label">Level 1 — Warm-Up Flashcards</div>
-  <div class="flash-stage">
-    <div class="fc-progress mono">${fc.idx+1} / ${total}</div>
-    <div class="flashcard" id="flashcard">
-      <div class="fc-tag">${fc.flipped ? 'Answer' : 'Predict, then flip'}</div>
-      ${fc.flipped ? `<div class="fc-a">${esc(a)}</div>` : `<div class="fc-q">${esc(q)}</div>`}
-      <div class="fc-hint">${fc.flipped ? 'How did you do?' : 'Tap the card to reveal'}</div>
-    </div>
-    ${fc.flipped ? `
-      <div class="fc-controls">
-        <button class="fc-btn miss" id="fcMiss">Missed it</button>
-        <button class="fc-btn got" id="fcGot">Got it! (+10 XP)</button>
-      </div>
-    ` : ''}
-  </div>`;
+  const entry = fc.deck[fc.idx];
+  const type = entry.type, params = entry.params;
+  const gen = GEN[type];
+  const qText = gen.q(params);
+
+  let html = '<div class="level-label">Level 1 — Adaptive Flashcards</div><div class="flash-stage">';
+  html += `<div class="fc-progress mono">Card ${fc.idx+1} / ${total}</div>`;
+  if(entry.isBonus) html += `<div class="bonus-tag">🔥 Bonus Challenge — you unlocked this!</div>`;
+
+  html += `<div class="flashcard"><div class="fc-q">${esc(qText)}</div></div>`;
+
+  if(fc.verifying){
+    const vGen = GEN[fc.verifyType];
+    html += `<div class="fc-solutionbox"><div class="ss-title">How to Solve It</div><ol>`;
+    gen.steps(params).forEach(s=> html += `<li>${esc(s)}</li>`);
+    html += `</ol></div>`;
+    html += `<div class="fc-verify-title">Quick check — try one just like it to make sure it clicked:</div>`;
+    html += `<div class="flashcard"><div class="fc-q">${esc(vGen.q(fc.verifyParams))}</div></div>`;
+    if(fc.verifyWrong){
+      html += `<div class="fc-feedback bad">That wasn't quite it — the answer is <b>${esc(vGen.display(fc.verifyParams))}</b>. No worries, let's keep moving.</div>`;
+      html += `<div class="fc-btnrow"><button class="primary-btn" id="fcContinueAfterVerify">Continue →</button></div>`;
+    } else {
+      html += `<div class="fc-input-row"><input type="text" class="fc-input" id="fcVerifyInput" placeholder="Type your answer" autocomplete="off"><button class="fc-submit" id="fcVerifySubmit">Check</button></div>`;
+      html += `<div class="fc-btnrow"><button class="skip-btn" id="fcSkipBtn">Skip for now →</button></div>`;
+    }
+  } else {
+    html += `<div class="fc-input-row"><input type="text" class="fc-input" id="fcInput" placeholder="Type your answer" autocomplete="off"><button class="fc-submit" id="fcSubmitBtn">Check</button></div>`;
+    if(fc.attempts > 0 && fc.attempts < 4){
+      html += `<div class="fc-attempts">Attempt ${fc.attempts} of 4 — not quite, here's a nudge:</div>`;
+      html += `<div class="fc-hintbox"><div class="hb-title">Hint</div>${esc(gen.hints(params)[fc.hintsShown-1])}</div>`;
+    }
+  }
+  html += '</div>';
+  return html;
 }
 
 function renderVideo(d){
@@ -879,7 +1534,7 @@ function renderVideo(d){
   </div>`;
 }
 
-function renderQuiz(d, label, isBoss){
+function renderMathQuiz(d, label, isBoss){
   const total = quiz.list.length;
   if(quiz.idx >= total) return '<div style="text-align:center;color:#a8a6ae;">Loading…</div>';
   const q = quiz.list[quiz.idx];
@@ -888,10 +1543,7 @@ function renderQuiz(d, label, isBoss){
   if(isBoss){
     const need = bossThreshold(d);
     const pct = Math.round((quiz.idx/total)*100);
-    html += `<div class="boss-meter-wrap">
-      <div class="boss-meter-label"><span>Question ${quiz.idx+1} of ${total}</span><span>Need ${need} correct to win</span></div>
-      <div class="boss-meter"><div class="boss-meter-fill" style="width:${pct}%;"></div></div>
-    </div>`;
+    html += `<div class="boss-meter-wrap"><div class="boss-meter-label"><span>Question ${quiz.idx+1} of ${total}</span><span>Need ${need} correct to win</span></div><div class="boss-meter"><div class="boss-meter-fill" style="width:${pct}%;"></div></div></div>`;
   } else {
     html += `<div class="quiz-progress">Question ${quiz.idx+1} of ${total}</div>`;
   }
@@ -899,23 +1551,20 @@ function renderQuiz(d, label, isBoss){
   html += `<div class="quiz-q">${esc(q.q)}</div><div class="quiz-choices">`;
   q.choices.forEach((c,i)=>{
     let cls = 'choice-btn';
-    if(quiz.showResult){
-      if(i === q.correct) cls += ' correct';
-      else if(i === quiz.selected) cls += ' wrong';
-    }
-    html += `<button class="${cls}" data-choice="${i}" ${quiz.showResult?'disabled':''}>${esc(c)}</button>`;
+    if(quiz.showResult){ if(i===q.correct) cls += ' correct'; else if(i===quiz.selected) cls += ' wrong'; }
+    html += `<button class="${cls}" data-mchoice="${i}" ${quiz.showResult?'disabled':''}>${esc(c)}</button>`;
   });
   html += '</div>';
 
   if(quiz.showResult){
     const wasRight = quiz.selected === q.correct;
     html += `<div class="feedback ${wasRight?'ok':'bad'}">${wasRight ? '✅ Correct!' : '❌ Not quite — correct answer is highlighted.'}</div>`;
-    html += `<button class="primary-btn" id="nextQ">${quiz.idx+1 >= total ? (isBoss ? 'Finish Battle' : 'Continue') : 'Next Question →'}</button>`;
+    html += `<button class="primary-btn" id="mNextQ">${quiz.idx+1 >= total ? (isBoss ? 'Finish Battle' : 'Continue') : 'Next Question →'}</button>`;
   }
   return html;
 }
 
-function renderSummary(d){
+function renderMathSummary(d){
   const need = bossThreshold(d);
   if(lastBossPassed){
     const isFinal = d.day === DAYS.length;
@@ -926,7 +1575,7 @@ function renderSummary(d){
       <div class="summary-sub">You scored ${quiz.correct}/${quiz.list.length} on the boss battle (needed ${need}).</div>
       <div class="xp-pill">+${lastXpGain} XP earned</div>
       ${d.specialBadge ? `<div style="margin-bottom:18px;font-size:14px;">${d.specialBadge.icon} Badge unlocked: <b>${esc(d.specialBadge.name)}</b></div>` : ''}
-      ${isFinal ? `<div style="font-size:13.5px;color:var(--ink-dim);margin-bottom:18px;">He's ready for 7th grade multiplication, division, fractions, decimals, negatives, and one-step algebra. Print this as a certificate moment!</div>` : ''}
+      ${isFinal ? `<div style="font-size:13.5px;color:var(--ink-dim);margin-bottom:18px;">He's ready for 7th grade multiplication, division, fractions, decimals, negatives, and one-step algebra!</div>` : ''}
       <br><button class="primary-btn" id="toDashboard">Back to the Path</button>
     </div>`;
   } else {
@@ -941,41 +1590,166 @@ function renderSummary(d){
   }
 }
 
-/* ============================= EVENTS ============================= */
+/* ---------------- READING: DASHBOARD ---------------- */
+function renderReadingDashboard(){
+  let html = `<div class="hub-card" id="openHub"><div class="hub-icon">📚</div><div><div class="hub-t">Book Reference Hub</div><div class="hub-s">Summary · Characters · Glossary · Themes · Fun Facts · Quote</div></div></div>`;
+  html += '<div class="path">';
+  READING_DAYS.forEach(rd=>{
+    const done = !!progress.readingCompletedDays[rd.day];
+    const locked = rd.day > progress.readingUnlockedDay;
+    const current = rd.day === progress.readingUnlockedDay && !done;
+    let cls = 'node';
+    if(locked) cls += ' locked'; else if(done) cls += ' done'; else if(current) cls += ' current';
+    html += `<div class="${cls}" data-rday="${rd.day}">
+      <div class="num">${done ? '✓' : rd.day}</div>
+      <div class="info"><div class="nt">${esc(rd.title)}</div><div class="ns">${esc(rd.pages)}</div></div>
+      ${rd.specialBadge ? `<div class="badge-icon">${rd.specialBadge.icon}</div>` : ''}
+      ${locked ? '<div class="lock-icon">🔒</div>' : ''}
+    </div>`;
+  });
+  html += '</div>';
+  html += `<div class="reset-row"><button class="reset-btn" id="resetBtn">Reset all progress</button></div>`;
+  return html;
+}
 
+function renderReadingHub(){
+  let html = `<button class="back-btn" id="backBtn">← Back to reading path</button>`;
+  html += `<div class="ref-section"><h3>Book Overview</h3><p>${esc(BOOK_REF.summary)}</p></div>`;
+  html += `<div class="ref-section"><h3>Who's Who</h3>`;
+  BOOK_REF.characters.forEach(c=>{ html += `<div class="char-row"><div class="cname">${esc(c.name)}</div><div class="cdesc">${esc(c.desc)}</div></div>`; });
+  html += `</div>`;
+  html += `<div class="ref-section"><h3>Must-Know Glossary</h3>`;
+  BOOK_REF.glossary.forEach(g=>{ html += `<div class="glossary-item"><b>${esc(g.term)}</b> — ${esc(g.def)}</div>`; });
+  html += `</div>`;
+  html += `<div class="ref-section"><h3>Meanings & Themes</h3>`;
+  BOOK_REF.themes.forEach(t=>{ html += `<p><b>${esc(t.title)}:</b> ${esc(t.desc)}</p>`; });
+  html += `</div>`;
+  html += `<div class="ref-section"><h3>Fun Facts</h3>`;
+  BOOK_REF.funFacts.forEach(f=>{ html += `<div class="fact-item">${esc(f)}</div>`; });
+  html += `</div>`;
+  html += `<div class="quote-box"><div class="qq">"${esc(BOOK_REF.quote.text)}"</div><div class="qa">${esc(BOOK_REF.quote.note)}</div></div>`;
+  return html;
+}
+
+/* ---------------- READING: DAY SCREEN ---------------- */
+function renderReadingDayScreen(){
+  const rd = READING_DAYS[view.day-1];
+  let html = `<button class="back-btn" id="backBtn">← Back to reading path</button>`;
+  html += `<div class="day-header"><div class="day-title">Day ${rd.day}: ${esc(rd.title)}</div><div class="day-sub">${esc(rd.pages)}</div></div>`;
+
+  if(view.sub !== 'summary'){
+    const stages = ['recap','quiz','challenge'];
+    const curIdx = stages.indexOf(view.sub);
+    html += '<div class="levels-row">';
+    stages.forEach((s,i)=>{
+      let pc = 'level-pip';
+      if(i < curIdx) pc += ' pastdone'; else if(i===curIdx) pc += ' active';
+      html += `<div class="${pc}"></div>`;
+    });
+    html += '</div>';
+  }
+
+  if(view.sub==='recap') html += renderReadingRecap(rd);
+  else if(view.sub==='quiz') html += renderReadingQuiz(rd);
+  else if(view.sub==='challenge') html += renderReadingChallenge(rd);
+  else if(view.sub==='summary') html += renderReadingSummary(rd);
+
+  return html;
+}
+
+function renderReadingRecap(rd){
+  return `
+  <div class="level-label">What Happens in This Chunk</div>
+  <div class="recap-card">${esc(rd.recap)}</div>
+  <div class="vocab-card"><div class="v-term">📌 ${esc(rd.vocabTerm)}</div><div class="v-def">${esc(rd.vocabDef)}</div></div>
+  <button class="primary-btn" id="toReadingQuiz">Continue to Quick Check →</button>`;
+}
+
+function renderReadingQuiz(rd){
+  const total = rquiz.list.length;
+  if(rquiz.idx >= total) return '<div style="text-align:center;color:#a8a6ae;">Loading…</div>';
+  const q = rquiz.list[rquiz.idx];
+  let html = `<div class="level-label">Quick Comprehension Check</div><div class="quiz-progress">Question ${rquiz.idx+1} of ${total}</div>`;
+  html += `<div class="quiz-q">${esc(q.q)}</div><div class="quiz-choices">`;
+  q.choices.forEach((c,i)=>{
+    let cls = 'choice-btn';
+    if(rquiz.showResult){ if(i===q.correct) cls += ' correct'; else if(i===rquiz.selected) cls += ' wrong'; }
+    html += `<button class="${cls}" data-rchoice="${i}" ${rquiz.showResult?'disabled':''}>${esc(c)}</button>`;
+  });
+  html += '</div>';
+  if(rquiz.showResult){
+    const wasRight = rquiz.selected === q.correct;
+    html += `<div class="feedback ${wasRight?'ok':'bad'}">${wasRight ? '✅ Correct! +10 XP' : '❌ Not quite — correct answer is highlighted.'}</div>`;
+    html += `<button class="primary-btn" id="rNextQ">${rquiz.idx+1 >= total ? 'Continue →' : 'Next Question →'}</button>`;
+  }
+  return html;
+}
+
+function renderReadingChallenge(rd){
+  return `
+  <div class="level-label">Discussion / Creative Challenge</div>
+  <div class="challenge-card"><div class="ch-tag">Talk it out or write it down</div>${esc(rd.challenge)}</div>
+  <button class="primary-btn" id="doneChallenge">Mark Challenge Complete →</button>`;
+}
+
+function renderReadingSummary(rd){
+  const isFinal = rd.day === READING_DAYS.length;
+  return `
+  <div class="summary-wrap">
+    <div class="summary-icon">${isFinal ? '🏆' : '📖'}</div>
+    <div class="summary-title">${isFinal ? 'Book Complete!' : 'Day Complete!'}</div>
+    <div class="summary-sub">Scored ${rquiz.correct}/${rquiz.list.length} on the comprehension check.</div>
+    <div class="xp-pill">+${lastXpGain} XP earned</div>
+    ${rd.specialBadge ? `<div style="margin-bottom:18px;font-size:14px;">${rd.specialBadge.icon} Badge unlocked: <b>${esc(rd.specialBadge.name)}</b></div>` : ''}
+    ${isFinal ? `<div style="font-size:13.5px;color:var(--ink-dim);margin-bottom:18px;">He's finished Aru Shah and the End of Time — and understands the story, characters, and themes!</div>` : ''}
+    <br><button class="primary-btn" id="toDashboard">Back to the Reading Path</button>
+  </div>`;
+}
+
+/* ============================================================
+   EVENTS
+   ============================================================ */
 function bindEvents(){
-  const backBtn = document.getElementById('backBtn');
-  if(backBtn) backBtn.onclick = goDashboard;
+  const tabMath = document.getElementById('tabMath'); if(tabMath) tabMath.onclick = ()=>switchMode('math');
+  const tabReading = document.getElementById('tabReading'); if(tabReading) tabReading.onclick = ()=>switchMode('reading');
 
-  document.querySelectorAll('.node').forEach(el=>{
-    el.onclick = ()=> openDay(parseInt(el.dataset.day,10));
-  });
-
+  const backBtn = document.getElementById('backBtn'); if(backBtn) backBtn.onclick = goDashboard;
   const resetBtn = document.getElementById('resetBtn');
-  if(resetBtn) resetBtn.onclick = ()=>{
-    if(confirm('Reset all XP, badges, and unlocked days? This cannot be undone.')) resetProgress();
-  };
+  if(resetBtn) resetBtn.onclick = ()=>{ if(confirm('Reset all XP, badges, and unlocked days? This cannot be undone.')) resetProgress(); };
 
-  const flashcard = document.getElementById('flashcard');
-  if(flashcard) flashcard.onclick = flipCard;
-  const fcMiss = document.getElementById('fcMiss'); if(fcMiss) fcMiss.onclick = ()=>markCard(false);
-  const fcGot = document.getElementById('fcGot'); if(fcGot) fcGot.onclick = ()=>markCard(true);
+  document.querySelectorAll('.node[data-mday]').forEach(el=>{ el.onclick = ()=> openMathDay(parseInt(el.dataset.mday,10)); });
+  document.querySelectorAll('.node[data-rday]').forEach(el=>{ el.onclick = ()=> openReadingDay(parseInt(el.dataset.rday,10)); });
+  const openHub = document.getElementById('openHub'); if(openHub) openHub.onclick = openReadingHub;
 
-  const markWatched = document.getElementById('markWatched');
-  if(markWatched) markWatched.onclick = markVideoWatched;
-  const toPractice = document.getElementById('toPractice');
-  if(toPractice) toPractice.onclick = ()=>goSub('practice');
+  /* Flashcards */
+  const fcInput = document.getElementById('fcInput');
+  const fcSubmitBtn = document.getElementById('fcSubmitBtn');
+  if(fcSubmitBtn) fcSubmitBtn.onclick = ()=>{ const v = fcInput ? fcInput.value : ''; fcSubmit(v); };
+  if(fcInput){ fcInput.focus(); fcInput.onkeydown = (e)=>{ if(e.key==='Enter') fcSubmit(fcInput.value); }; }
 
-  document.querySelectorAll('.choice-btn').forEach(el=>{
-    el.onclick = ()=> selectAnswer(parseInt(el.dataset.choice,10));
-  });
-  const nextQ = document.getElementById('nextQ');
-  if(nextQ) nextQ.onclick = nextQuestion;
+  const fcVerifyInput = document.getElementById('fcVerifyInput');
+  const fcVerifySubmit = document.getElementById('fcVerifySubmit');
+  if(fcVerifySubmit) fcVerifySubmit.onclick = ()=>{ const v = fcVerifyInput ? fcVerifyInput.value : ''; fcSubmit(v); };
+  if(fcVerifyInput){ fcVerifyInput.focus(); fcVerifyInput.onkeydown = (e)=>{ if(e.key==='Enter') fcSubmit(fcVerifyInput.value); }; }
 
-  const toDashboard = document.getElementById('toDashboard');
-  if(toDashboard) toDashboard.onclick = goDashboard;
-  const retry = document.getElementById('retryBoss');
-  if(retry) retry.onclick = retryBoss;
+  const fcSkipBtn = document.getElementById('fcSkipBtn'); if(fcSkipBtn) fcSkipBtn.onclick = fcSkip;
+  const fcContinueAfterVerify = document.getElementById('fcContinueAfterVerify'); if(fcContinueAfterVerify) fcContinueAfterVerify.onclick = fcAdvance;
+
+  /* Video */
+  const markWatched = document.getElementById('markWatched'); if(markWatched) markWatched.onclick = markVideoWatched;
+  const toPractice = document.getElementById('toPractice'); if(toPractice) toPractice.onclick = ()=>goMathSub('practice');
+
+  /* Math quiz */
+  document.querySelectorAll('.choice-btn[data-mchoice]').forEach(el=>{ el.onclick = ()=> selectAnswer(parseInt(el.dataset.mchoice,10)); });
+  const mNextQ = document.getElementById('mNextQ'); if(mNextQ) mNextQ.onclick = nextQuestion;
+  const toDashboardMath = document.getElementById('toDashboard'); if(toDashboardMath) toDashboardMath.onclick = goDashboard;
+  const retry = document.getElementById('retryBoss'); if(retry) retry.onclick = retryBoss;
+
+  /* Reading */
+  const toReadingQuiz = document.getElementById('toReadingQuiz'); if(toReadingQuiz) toReadingQuiz.onclick = ()=>goReadingSub('quiz');
+  document.querySelectorAll('.choice-btn[data-rchoice]').forEach(el=>{ el.onclick = ()=> rSelectAnswer(parseInt(el.dataset.rchoice,10)); });
+  const rNextQ = document.getElementById('rNextQ'); if(rNextQ) rNextQ.onclick = rNextQuestion;
+  const doneChallenge = document.getElementById('doneChallenge'); if(doneChallenge) doneChallenge.onclick = markChallengeDone;
 }
 
 loadProgress();
